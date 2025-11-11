@@ -22,7 +22,7 @@ const I18N_EMBED = {
       lang: "语言"
     },
     index: {
-      heroTitle: "打造属于玩家的宇宙",
+      heroTitle: "打造属于女生玩家的宇宙",
       heroSub: "从激烈的竞技对战到广袤的银河探索，我们致力于在每个作品中注入创造力与可玩性。加入数百万玩家的冒险旅程。",
       browseGames: "浏览游戏目录",
       viewNews: "查看最新公告",
@@ -85,7 +85,7 @@ const I18N_EMBED = {
       lang: "Language"
     },
     index: {
-      heroTitle: "Craft a universe for players",
+      heroTitle: "Craft a universe for female players",
       heroSub: "From competitive battles to vast galactic exploration, we put creativity and playability into every title. Join millions on their adventure.",
       browseGames: "Browse Games",
       viewNews: "View Latest News",

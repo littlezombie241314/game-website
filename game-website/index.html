@@ -30,6 +30,7 @@
             <option value="zh">中文</option>
             <option value="en">English</option>
           </select>
+          <button id="theme-cycle-toggle" class="btn icon-btn" aria-label="颜色循环" title="颜色循环">🌈</button>
           <button id="theme-toggle" class="btn icon-btn" data-i18n="nav.theme" aria-label="切换主题">🎨</button>
           <a class="btn btn-primary" href="games.html" data-i18n="nav.playNow">立即游玩</a>
         </div>
@@ -39,7 +40,7 @@
     <main>
       <section class="hero container">
         <div>
-          <h1 class="hero-title" data-i18n="index.heroTitle">打造属于玩家的宇宙</h1>
+          <h1 class="hero-title" data-i18n="index.heroTitle">打造属于女生玩家的宇宙</h1>
           <p class="hero-sub" data-i18n="index.heroSub">从激烈的竞技对战到广袤的银河探索，我们致力于在每个作品中注入创造力与可玩性。加入数百万玩家的冒险旅程。</p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="games.html" data-i18n="index.browseGames">浏览游戏目录</a>
@@ -48,7 +49,10 @@
         </div>
         <div class="hero-card">
           <div class="muted">最新预告</div>
-          <div class="hero-media">预告片占位</div>
+          <div class="hero-media">
+            <img src="./assets/images/trailer-poster.jpg" alt="最新游戏预告片" style="width: 100%; height: auto; border-radius: 8px; cursor: pointer;" onclick="playTrailer()">
+            <div class="play-button" onclick="playTrailer()">▶</div>
+          </div>
         </div>
       </section>
 

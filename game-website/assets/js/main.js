@@ -1,5 +1,6 @@
 // 暗色模式切换（保持到 localStorage）
 const THEME_CYCLE = ['dark', 'cyberpunk', 'space-explorer', 'future-tech', 'hologram', 'digital-matrix', 'pastel-peach', 'pastel-lavender', 'pastel-lemon', 'pastel-sky', 'pastel-sakura', 'pastel-taro'];
+let themeInterval = null;
 
 function applyTheme(themeName) {
   if (!themeName) return;
@@ -7,10 +8,66 @@ function applyTheme(themeName) {
   localStorage.setItem('theme', themeName);
 }
 
+// 自动主题循环切换（每5秒）
+function startThemeCycle() {
+  if (themeInterval) {
+    clearInterval(themeInterval);
+  }
+  
+  themeInterval = setInterval(() => {
+    const current = document.documentElement.dataset.theme || 'dark';
+    const idx = THEME_CYCLE.indexOf(current);
+    const next = THEME_CYCLE[(idx + 1) % THEME_CYCLE.length];
+    applyTheme(next);
+  }, 5000); // 5秒切换一次
+  
+  // 更新按钮状态
+  updateCycleButtonState(true);
+}
+
+// 停止主题循环
+function stopThemeCycle() {
+  if (themeInterval) {
+    clearInterval(themeInterval);
+    themeInterval = null;
+  }
+  
+  // 更新按钮状态
+  updateCycleButtonState(false);
+}
+
+// 切换主题循环状态
+function toggleThemeCycle() {
+  if (themeInterval) {
+    stopThemeCycle();
+  } else {
+    startThemeCycle();
+  }
+}
+
+// 更新循环按钮状态
+function updateCycleButtonState(isRunning) {
+  const cycleBtn = document.getElementById('theme-cycle-toggle');
+  if (cycleBtn) {
+    if (isRunning) {
+      cycleBtn.innerHTML = '⏹️';
+      cycleBtn.title = '停止颜色循环';
+      cycleBtn.setAttribute('aria-label', '停止颜色循环');
+    } else {
+      cycleBtn.innerHTML = '🌈';
+      cycleBtn.title = '开始颜色循环';
+      cycleBtn.setAttribute('aria-label', '开始颜色循环');
+    }
+  }
+}
+
 (function initTheme() {
   const saved = localStorage.getItem('theme');
-  const initial = THEME_CYCLE.includes(saved) ? saved : 'pastel-mint';
+  const initial = THEME_CYCLE.includes(saved) ? saved : 'dark';
   applyTheme(initial);
+  
+  // 启动主题循环
+  startThemeCycle();
 })();
 
 function toggleTheme() {
@@ -18,6 +75,9 @@ function toggleTheme() {
   const idx = THEME_CYCLE.indexOf(current);
   const next = THEME_CYCLE[(idx + 1) % THEME_CYCLE.length];
   applyTheme(next);
+  
+  // 切换主题时重新启动循环
+  startThemeCycle();
 }
 
 // 简易导航高亮
@@ -131,6 +191,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   bindDemoForms();
   const themeBtn = document.getElementById('theme-toggle');
   themeBtn?.addEventListener('click', toggleTheme);
+  
+  // 颜色循环控制按钮
+  const cycleBtn = document.getElementById('theme-cycle-toggle');
+  cycleBtn?.addEventListener('click', toggleThemeCycle);
+  
   // 首页主题色块选择
   document.querySelectorAll('.theme-swatch[data-theme]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -178,6 +243,19 @@ async function renderHomeSpotlight() {
       </div>
     </article>
   `).join('');
+}
+
+// 播放预告片功能
+function playTrailer() {
+  // 这里可以添加实际的视频播放逻辑
+  // 例如：打开视频弹窗、跳转到视频页面、或者直接播放视频
+  alert('播放预告片功能 - 这里可以集成实际的视频播放器');
+  
+  // 示例：打开YouTube链接（如果有的话）
+  // window.open('https://www.youtube.com/watch?v=your-trailer-id', '_blank');
+  
+  // 或者：显示视频弹窗
+  // showVideoModal('./assets/videos/latest-trailer.mp4');
 }
 
 // 比赛页：全球排行榜与Top3视频预览

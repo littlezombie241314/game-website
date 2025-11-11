@@ -402,19 +402,57 @@ button { font: inherit; }
   border-radius: 16px;
   box-shadow: var(--shadow);
   padding: 18px;
-  min-height: 260px;
+  min-height: 340px;
   display: grid;
   grid-template-rows: auto 1fr;
 }
 .hero-media {
   border-radius: 12px;
   overflow: hidden;
-  height: 180px;
+  height: auto;
+  min-height: 200px;
   background: linear-gradient(135deg, rgba(106,167,255,.15), rgba(122,255,216,.1));
+  position: relative;
   display: grid;
   place-items: center;
   color: #d5e2ff;
   font-weight: 600;
+}
+
+.play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--primary-strong);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.play-button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+}
+
+.hero-media img {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  transition: transform 0.3s ease;
+}
+
+.hero-media:hover img {
+  transform: scale(1.05);
 }
 
 .section {
