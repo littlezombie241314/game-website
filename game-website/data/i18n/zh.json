@@ -1,0 +1,74 @@
+{
+  "brand": "Orion Games",
+  "nav": {
+    "home": "首页",
+    "games": "游戏",
+    "news": "新闻",
+    "matches": "比赛",
+    "community": "社区",
+    "support": "支持",
+    "careers": "招聘",
+    "about": "关于",
+    "contact": "联系",
+    "playNow": "立即游玩",
+    "theme": "切换主题",
+    "lang": "语言"
+  },
+  "index": {
+    "heroTitle": "打造属于玩家的宇宙",
+    "heroSub": "从激烈的竞技对战到广袤的银河探索，我们致力于在每个作品中注入创造力与可玩性。加入数百万玩家的冒险旅程。",
+    "browseGames": "浏览游戏目录",
+    "viewNews": "查看最新公告",
+    "popular": "热门游戏",
+    "features": "特色模块",
+    "spotlight": "焦点推荐",
+    "latestNews": "最新新闻",
+    "viewAll": "查看全部",
+    "moreNews": "更多资讯",
+    "joinCommunity": "加入社区"
+  },
+  "games": {
+    "title": "全部游戏",
+    "search": "搜索游戏名称...",
+    "all": "全部类型"
+  },
+  "news": {
+    "title": "新闻与公告",
+    "search": "搜索新闻...",
+    "rss": "订阅 RSS",
+    "readMore": "阅读更多"
+  },
+  "community": {
+    "title": "社区",
+    "ugc": "UGC 创作",
+    "submit": "提交作品",
+    "search": "搜索作品标题或作者...",
+    "typeAll": "全部类型",
+    "sortHot": "最热优先",
+    "sortNew": "最新优先",
+    "view": "查看"
+  },
+  "support": {
+    "title": "帮助与支持",
+    "search": "搜索问题...",
+    "rules": "玩家守则",
+    "security": "安全中心",
+    "faq": "常见问题",
+    "ticket": "提交工单",
+    "email": "邮箱",
+    "category": "问题分类",
+    "desc": "问题描述",
+    "submit": "提交"
+  },
+  "matches": {
+    "top3": "Top 3 视频预览",
+    "globalRanking": "全球排行榜",
+    "rank": "排名",
+    "player": "选手",
+    "country": "国家/地区",
+    "points": "积分",
+    "preview": "预览"
+  }
+}
+
+

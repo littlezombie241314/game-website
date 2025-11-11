@@ -1,0 +1,14 @@
+{
+  "games": [
+    { "id": "g1", "title": "Aegis: Dawn", "genre": "arpg", "tagline": "高能战斗与装备刷刷乐的结合。" },
+    { "id": "g2", "title": "Nebula Odyssey", "genre": "space", "tagline": "银河探索与基地建造的太空史诗。" },
+    { "id": "g3", "title": "Ironfront Tactics", "genre": "strategy", "tagline": "即时战略与深度军备系统。" },
+    { "id": "g4", "title": "Shadowline Arena", "genre": "moba", "tagline": "快节奏 5v5 多职业对战。" },
+    { "id": "g5", "title": "Rally X Horizon", "genre": "racing", "tagline": "经典街机与现代手感的碰撞。" },
+    { "id": "g6", "title": "Myst Vale", "genre": "adventure", "tagline": "探索与解谜并重的奇幻旅途。" },
+    { "id": "g7", "title": "Project Zero Night", "genre": "shooter", "tagline": "沉浸式射击与合作战役。" },
+    { "id": "g8", "title": "Chrono Seeds", "genre": "simulation", "tagline": "时间与农耕的奇妙结合。" }
+  ]
+}
+
+

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>帮助与支持 - Orion Games</title>
+    <meta name="description" content="查找帮助、常见问题与提交工单。">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+  </head>
+  <body>
+    <header class="header">
+      <div class="container nav">
+        <a class="brand" href="index.html" aria-label="返回首页">
+          <span class="brand-badge" aria-hidden="true"></span>
+          <span>Orion Games</span>
+        </a>
+        <nav class="nav-links" aria-label="主导航">
+          <a class="nav-link" href="index.html">首页</a>
+          <a class="nav-link" href="games.html">游戏</a>
+          <a class="nav-link" href="news.html">新闻</a>
+          <a class="nav-link" href="matches.html">比赛</a>
+          <a class="nav-link" href="community.html">社区</a>
+          <a class="nav-link" href="support.html">支持</a>
+          <a class="nav-link" href="careers.html">招聘</a>
+          <a class="nav-link" href="about.html">关于</a>
+          <a class="nav-link" href="contact.html">联系</a>
+        </nav>
+        <div class="nav-actions">
+          <button id="theme-toggle" class="btn icon-btn" aria-label="切换主题">🌓</button>
+          <a class="btn btn-primary" href="games.html">立即游玩</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="container" style="padding:24px 0">
+      <div class="section-head">
+        <h1 class="section-title">帮助与支持</h1>
+      </div>
+
+      <div class="toolbar" style="margin-bottom:16px">
+        <input id="support-search" class="input" placeholder="搜索问题..." aria-label="搜索问题">
+        <a class="btn" href="#">玩家守则</a>
+        <a class="btn" href="#">安全中心</a>
+      </div>
+
+      <a id="faq"></a>
+      <h2 class="section-title" style="margin:12px 0">常见问题</h2>
+      <div id="faq-list" class="accordion"><!-- 动态渲染 --></div>
+
+      <h2 class="section-title" style="margin:18px 0 8px">提交工单</h2>
+      <form data-demo class="card" style="padding:16px; grid-template-rows:auto">
+        <div class="grid grid-2">
+          <div>
+            <label class="muted">邮箱</label>
+            <input class="input" required placeholder="you@example.com">
+          </div>
+          <div>
+            <label class="muted">问题分类</label>
+            <select class="select">
+              <option>技术问题</option>
+              <option>账号与安全</option>
+              <option>支付与退款</option>
+              <option>举报与申诉</option>
+              <option>其他</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <label class="muted">问题描述</label>
+          <textarea class="textarea" placeholder="请尽量提供详细信息"></textarea>
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn btn-primary" type="submit">提交</button>
+        </div>
+      </form>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div>
+          <div class="brand" style="margin-bottom:8px">
+            <span class="brand-badge" aria-hidden="true"></span>
+            <span>Orion Games</span>
+          </div>
+          <p class="muted">打造沉浸与乐趣并存的互动娱乐体验。</p>
+        </div>
+        <div>
+          <h4>产品</h4>
+          <div><a href="games.html">全部游戏</a></div>
+          <div><a href="news.html">更新公告</a></div>
+          <div><a href="esports.html">电竞赛事</a></div>
+        </div>
+        <div>
+          <h4>公司</h4>
+          <div><a href="about.html">关于我们</a></div>
+          <div><a href="careers.html">加入我们</a></div>
+          <div><a href="contact.html">商务合作</a></div>
+        </div>
+        <div>
+          <h4>支持</h4>
+          <div><a href="support.html">帮助中心</a></div>
+          <div><a href="community.html">社区与反馈</a></div>
+          <div><a href="support.html#faq">常见问题</a></div>
+        </div>
+      </div>
+      <div class="container copyright">
+        © <span id="year"></span> Orion Games. All rights reserved.
+      </div>
+    </footer>
+
+    <script src="./assets/js/main.js"></script>
+  </body>
+</html>
+
+

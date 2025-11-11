@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>新闻详情 - Orion Games</title>
+    <meta name="description" content="查看 Orion Games 的新闻与公告详情。">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+  </head>
+  <body>
+    <header class="header">
+      <div class="container nav">
+        <a class="brand" href="index.html" aria-label="返回首页">
+          <span class="brand-badge" aria-hidden="true"></span>
+          <span>Orion Games</span>
+        </a>
+        <nav class="nav-links" aria-label="主导航">
+          <a class="nav-link" href="index.html">首页</a>
+          <a class="nav-link" href="games.html">游戏</a>
+          <a class="nav-link" href="news.html">新闻</a>
+          <a class="nav-link" href="matches.html">比赛</a>
+          <a class="nav-link" href="community.html">社区</a>
+          <a class="nav-link" href="support.html">支持</a>
+          <a class="nav-link" href="careers.html">招聘</a>
+          <a class="nav-link" href="about.html">关于</a>
+          <a class="nav-link" href="contact.html">联系</a>
+        </nav>
+        <div class="nav-actions">
+          <button id="theme-toggle" class="btn icon-btn" aria-label="切换主题">🌓</button>
+          <a class="btn btn-primary" href="games.html">立即游玩</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="container" style="padding:24px 0; max-width: 860px;">
+      <a class="btn" href="news.html">← 返回新闻列表</a>
+      <article class="card" style="padding:20px; grid-template-rows:auto; margin-top:12px">
+        <header>
+          <h1 id="post-title" class="card-title" style="font-size:28px; margin-bottom:6px">加载中...</h1>
+          <p class="muted" id="post-date"></p>
+        </header>
+        <div id="post-content" style="margin-top:12px" class="muted">
+          正在加载内容...
+        </div>
+      </article>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div>
+          <div class="brand" style="margin-bottom:8px">
+            <span class="brand-badge" aria-hidden="true"></span>
+            <span>Orion Games</span>
+          </div>
+          <p class="muted">打造沉浸与乐趣并存的互动娱乐体验。</p>
+        </div>
+        <div>
+          <h4>产品</h4>
+          <div><a href="games.html">全部游戏</a></div>
+          <div><a href="news.html">更新公告</a></div>
+          <div><a href="esports.html">电竞赛事</a></div>
+        </div>
+        <div>
+          <h4>公司</h4>
+          <div><a href="about.html">关于我们</a></div>
+          <div><a href="careers.html">加入我们</a></div>
+          <div><a href="contact.html">商务合作</a></div>
+        </div>
+        <div>
+          <h4>支持</h4>
+          <div><a href="support.html">帮助中心</a></div>
+          <div><a href="community.html">社区与反馈</a></div>
+          <div><a href="support.html#faq">常见问题</a></div>
+        </div>
+      </div>
+      <div class="container copyright">
+        © <span id="year"></span> Orion Games. All rights reserved.
+      </div>
+    </footer>
+
+    <script src="./assets/js/markdown.js"></script>
+    <script>
+      async function loadDetail() {
+        const params = new URLSearchParams(location.search);
+        const slug = params.get('id');
+        if (!slug) {
+          document.getElementById('post-title').textContent = '未找到文章';
+          document.getElementById('post-content').textContent = '缺少参数 id。';
+          return;
+        }
+        try {
+          const res = await fetch('./data/news.json', { cache: 'no-store' });
+          const data = await res.json();
+          const found = (data.articles || []).find(a => a.slug === slug);
+          if (!found) throw new Error('not found');
+          document.title = `${found.title} - Orion Games`;
+          document.getElementById('post-title').textContent = found.title;
+          document.getElementById('post-date').textContent = found.date || '';
+
+          const mdRes = await fetch(`./${found.file}`, { cache: 'no-store' });
+          const md = await mdRes.text();
+          document.getElementById('post-content').innerHTML = renderMarkdown(md);
+        } catch (e) {
+          document.getElementById('post-title').textContent = '加载失败';
+          document.getElementById('post-content').textContent = '内容暂不可用，请稍后重试。';
+          console.error(e);
+        }
+      }
+      document.addEventListener('DOMContentLoaded', loadDetail);
+    </script>
+    <script src="./assets/js/main.js"></script>
+  </body>
+</html>
+
+

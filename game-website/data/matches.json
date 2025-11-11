@@ -1,0 +1,16 @@
+{
+  "players": [
+    { "rank": 1, "name": "Aster", "country": "CN", "points": 2680, "video": "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+    { "rank": 2, "name": "Blaze", "country": "US", "points": 2540, "video": "https://www.youtube.com/embed/ysz5S6PUM-U" },
+    { "rank": 3, "name": "Crux", "country": "KR", "points": 2495, "video": "https://www.youtube.com/embed/jNQXAC9IVRw" },
+    { "rank": 4, "name": "Draco", "country": "JP", "points": 2360 },
+    { "rank": 5, "name": "Echo", "country": "SE", "points": 2305 },
+    { "rank": 6, "name": "Fiora", "country": "BR", "points": 2270 },
+    { "rank": 7, "name": "Gale", "country": "DE", "points": 2215 },
+    { "rank": 8, "name": "Hawk", "country": "GB", "points": 2170 },
+    { "rank": 9, "name": "Io", "country": "FR", "points": 2130 },
+    { "rank": 10, "name": "Juno", "country": "CA", "points": 2088 }
+  ]
+}
+
+

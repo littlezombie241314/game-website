@@ -1,0 +1,14 @@
+{
+  "items": [
+    { "id": "u1", "title": "星陨要塞 v1.2", "author": "NovaStar", "type": "map", "likes": 520, "date": "2025-10-08", "link": "#" },
+    { "id": "u2", "title": "环形战场：低配优化 MOD", "author": "flowdev", "type": "mod", "likes": 312, "date": "2025-10-06", "link": "#" },
+    { "id": "u3", "title": "银白机甲皮肤包", "author": "Yuki", "type": "skin", "likes": 210, "date": "2025-09-30", "link": "#" },
+    { "id": "u4", "title": "星际天穹摄影集", "author": "LensCat", "type": "screenshot", "likes": 188, "date": "2025-09-25", "link": "#" },
+    { "id": "u5", "title": "荒原遗迹 v0.9", "author": "BuilderX", "type": "map", "likes": 154, "date": "2025-09-20", "link": "#" },
+    { "id": "u6", "title": "战术指示器 HUD 精简", "author": "Gizmo", "type": "mod", "likes": 133, "date": "2025-09-18", "link": "#" },
+    { "id": "u7", "title": "曙光之刃皮肤", "author": "Aria", "type": "skin", "likes": 128, "date": "2025-09-12", "link": "#" },
+    { "id": "u8", "title": "银河落日摄影集", "author": "Dawn", "type": "screenshot", "likes": 119, "date": "2025-09-10", "link": "#" }
+  ]
+}
+
+

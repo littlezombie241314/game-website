@@ -1,0 +1,14 @@
+{
+  "articles": [
+    { "id": "n1", "slug": "v2-announcement", "title": "版本2.0：全新地图与职业登场", "summary": "更大世界、更深策略，赛季旅程同步开启。", "date": "2025-10-01", "file": "data/news/v2-announcement.md" },
+    { "id": "n2", "slug": "global-invitational", "title": "全球邀请赛公布：32支队伍争冠", "summary": "总奖池 200 万，线下总决赛坐标上海。", "date": "2025-09-22", "file": "data/news/global-invitational.md" },
+    { "id": "n3", "slug": "crossplay-beta", "title": "跨平台联机测试开放报名", "summary": "主机与 PC 互通，好友共战无门槛。", "date": "2025-09-10", "file": "data/news/crossplay-beta.md" },
+    { "id": "n4", "slug": "creator-program", "title": "内容创作者计划升级", "summary": "优质创作者可获得专属徽章与现金激励。", "date": "2025-08-30", "file": "data/news/creator-program.md" },
+    { "id": "n5", "slug": "anticheat-update", "title": "反外挂更新：新检测引擎上线", "summary": "安全与公平将持续是我们的首要目标。", "date": "2025-08-15", "file": "data/news/anticheat-update.md" },
+    { "id": "n6", "slug": "photo-contest", "title": "社区活动：截图摄影大赛", "summary": "投稿即有机会获得限定周边礼包。", "date": "2025-08-01", "file": "data/news/photo-contest.md" },
+    { "id": "n7", "slug": "double-11-sale", "title": "双十一折扣：DLC 限时优惠", "summary": "本体与豪华包均参与限时折扣。", "date": "2025-07-20", "file": "data/news/double-11-sale.md" },
+    { "id": "n8", "slug": "ugc-templates", "title": "创意工坊：UGC 模板开放", "summary": "官方模板助你快速创作自定义地图。", "date": "2025-07-05", "file": "data/news/ugc-templates.md" }
+  ]
+}
+
+

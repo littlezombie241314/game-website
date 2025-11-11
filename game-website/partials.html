@@ -1,0 +1,65 @@
+<!-- 复用片段（可复制到各页面使用） -->
+<!-- 顶部导航 -->
+<header class="header">
+  <div class="container nav">
+    <a class="brand" href="index.html" aria-label="返回首页">
+      <span class="brand-badge" aria-hidden="true"></span>
+      <span>Orion Games</span>
+    </a>
+    <nav class="nav-links" aria-label="主导航">
+      <a class="nav-link" href="index.html">首页</a>
+      <a class="nav-link" href="games.html">游戏</a>
+      <a class="nav-link" href="news.html">新闻</a>
+      <a class="nav-link" href="esports.html">电竞</a>
+      <a class="nav-link" href="community.html">社区</a>
+      <a class="nav-link" href="support.html">支持</a>
+      <a class="nav-link" href="careers.html">招聘</a>
+      <a class="nav-link" href="about.html">关于</a>
+      <a class="nav-link" href="contact.html">联系</a>
+    </nav>
+    <div class="nav-actions">
+      <button id="theme-toggle" class="btn icon-btn" aria-label="切换主题">🌓</button>
+      <a class="btn btn-primary" href="games.html">立即游玩</a>
+    </div>
+  </div>
+  </header>
+
+<!-- 页脚 -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>
+      <div class="brand" style="margin-bottom:8px">
+        <span class="brand-badge" aria-hidden="true"></span>
+        <span>Orion Games</span>
+      </div>
+      <p class="muted">打造沉浸与乐趣并存的互动娱乐体验。</p>
+    </div>
+    <div>
+      <h4>产品</h4>
+      <div><a href="games.html">全部游戏</a></div>
+      <div><a href="news.html">更新公告</a></div>
+      <div><a href="esports.html">电竞赛事</a></div>
+    </div>
+    <div>
+      <h4>公司</h4>
+      <div><a href="about.html">关于我们</a></div>
+      <div><a href="careers.html">加入我们</a></div>
+      <div><a href="contact.html">商务合作</a></div>
+    </div>
+    <div>
+      <h4>支持</h4>
+      <div><a href="support.html">帮助中心</a></div>
+      <div><a href="community.html">社区与反馈</a></div>
+      <div><a href="support.html#faq">常见问题</a></div>
+    </div>
+  </div>
+  <div class="container copyright">
+    © <span id="year"></span> Orion Games. All rights reserved.
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+

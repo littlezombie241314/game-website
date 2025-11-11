@@ -1,0 +1,74 @@
+{
+  "brand": "Orion Games",
+  "nav": {
+    "home": "Home",
+    "games": "Games",
+    "news": "News",
+    "matches": "Matches",
+    "community": "Community",
+    "support": "Support",
+    "careers": "Careers",
+    "about": "About",
+    "contact": "Contact",
+    "playNow": "Play Now",
+    "theme": "Toggle Theme",
+    "lang": "Language"
+  },
+  "index": {
+    "heroTitle": "Craft a universe for players",
+    "heroSub": "From competitive battles to vast galactic exploration, we put creativity and playability into every title. Join millions on their adventure.",
+    "browseGames": "Browse Games",
+    "viewNews": "View Latest News",
+    "popular": "Popular Games",
+    "features": "Key Features",
+    "spotlight": "Spotlight",
+    "latestNews": "Latest News",
+    "viewAll": "View All",
+    "moreNews": "More News",
+    "joinCommunity": "Join Community"
+  },
+  "games": {
+    "title": "All Games",
+    "search": "Search game title...",
+    "all": "All Genres"
+  },
+  "news": {
+    "title": "News & Announcements",
+    "search": "Search news...",
+    "rss": "Subscribe RSS",
+    "readMore": "Read More"
+  },
+  "community": {
+    "title": "Community",
+    "ugc": "UGC Creations",
+    "submit": "Submit Work",
+    "search": "Search by title or author...",
+    "typeAll": "All Types",
+    "sortHot": "Top",
+    "sortNew": "Newest",
+    "view": "View"
+  },
+  "support": {
+    "title": "Help & Support",
+    "search": "Search issues...",
+    "rules": "Player Rules",
+    "security": "Security Center",
+    "faq": "FAQ",
+    "ticket": "Submit Ticket",
+    "email": "Email",
+    "category": "Category",
+    "desc": "Description",
+    "submit": "Submit"
+  },
+  "matches": {
+    "top3": "Top 3 Previews",
+    "globalRanking": "Global Ranking",
+    "rank": "Rank",
+    "player": "Player",
+    "country": "Country/Region",
+    "points": "Points",
+    "preview": "Preview"
+  }
+}
+
+
