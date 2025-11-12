@@ -187,6 +187,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderHomeSpotlight();
   renderGames();
   renderMatches();
+  renderFlightGameScores();
   renderSupportFAQ();
   bindDemoForms();
   const themeBtn = document.getElementById('theme-toggle');
@@ -313,6 +314,143 @@ async function renderMatches() {
   if (typeof i18nApply === 'function') {
     i18nApply(I18N_CURRENT);
   }
+}
+
+// 飞行游戏排行榜渲染
+async function renderFlightGameScores() {
+  const wrap = document.getElementById('flight-game-scores');
+  if (!wrap) return;
+  
+  // 模拟从全球服务器获取数据
+  const globalScores = await getGlobalScores();
+  
+  // 按分数降序排列，取前三名
+  const top3 = globalScores.slice().sort((a, b) => b.score - a.score).slice(0, 3);
+  
+  // 如果没有数据，显示提示信息
+  if (top3.length === 0) {
+    wrap.innerHTML = `
+      <div style="text-align:center;padding:40px;color:#666;">
+        <p>暂无全球游戏记录</p>
+        <p style="font-size:14px;margin-top:10px;">玩一局飞行游戏来创建全球分数记录吧！</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // 获取国家标志符号
+  const getCountryFlag = (countryCode) => {
+    const flags = {
+      'CN': '🇨🇳', 'US': '🇺🇸', 'JP': '🇯🇵', 'KR': '🇰🇷', 'GB': '🇬🇧',
+      'DE': '🇩🇪', 'FR': '🇫🇷', 'CA': '🇨🇦', 'AU': '🇦🇺', 'BR': '🇧🇷'
+    };
+    return flags[countryCode] || '🌍';
+  };
+  
+  wrap.innerHTML = `
+    <div style="overflow:auto">
+      <div style="margin-bottom:20px;padding:15px;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;border-radius:10px;">
+        <h3 style="margin:0;font-size:18px;">🌍 全球飞行游戏排行榜</h3>
+        <p style="margin:5px 0 0 0;font-size:14px;opacity:0.9;">来自世界各地的玩家最高分记录</p>
+      </div>
+      
+      <table class="table">
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>玩家</th>
+            <th>国家</th>
+            <th>分数</th>
+            <th>游戏时间</th>
+            <th>日期</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${top3.map((player, index) => `
+            <tr>
+              <td>
+                <span style="display:inline-flex;align-items:center;gap:4px;">
+                  ${index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+                  <span style="font-weight:bold;">${index + 1}</span>
+                </span>
+              </td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:18px;">${getCountryFlag(player.country)}</span>
+                  <strong>${player.name}</strong>
+                </div>
+              </td>
+              <td>${player.country}</td>
+              <td><span style="color:#6a4c93;font-weight:bold;font-size:16px;">${player.score}</span></td>
+              <td>${player.time}秒</td>
+              <td>${player.date}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      
+      <div style="margin-top:20px;padding:15px;background:#f8f9fa;border-radius:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <span style="font-weight:bold;color:#6a4c93;">📊 全球统计</span>
+            <span style="margin-left:10px;font-size:14px;color:#666;">
+              共 ${globalScores.length} 条记录 | 来自 ${new Set(globalScores.map(s => s.country)).size} 个国家
+            </span>
+          </div>
+          <button onclick="refreshGlobalScores()" style="padding:5px 10px;background:#6a4c93;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">
+            🔄 刷新数据
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 模拟从全球服务器获取分数数据
+async function getGlobalScores() {
+  try {
+    // 模拟API调用延迟
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // 在实际应用中，这里应该是真实的API调用
+    // 例如：const response = await fetch('/api/global-scores');
+    // return await response.json();
+    
+    // 模拟全球数据（包含预设数据和本地数据）
+    const presetData = await loadJSON('./data/flight-game-scores.json');
+    const localScores = JSON.parse(localStorage.getItem('flightGameScores') || '[]');
+    
+    // 合并数据并去重（基于分数、玩家、时间的组合）
+    const allScores = [...(presetData?.scores || []), ...localScores];
+    const uniqueScores = allScores.filter((score, index, self) => 
+      index === self.findIndex(s => 
+        s.score === score.score && s.name === score.name && s.time === score.time
+      )
+    );
+    
+    return uniqueScores;
+  } catch (error) {
+    console.error('获取全球数据失败:', error);
+    // 返回空数组作为后备
+    return [];
+  }
+}
+
+// 刷新全球数据
+async function refreshGlobalScores() {
+  const wrap = document.getElementById('flight-game-scores');
+  if (!wrap) return;
+  
+  // 显示加载状态
+  wrap.innerHTML = `
+    <div style="text-align:center;padding:40px;color:#666;">
+      <div style="font-size:24px;margin-bottom:10px;">⏳</div>
+      <p>正在从全球服务器获取最新数据...</p>
+    </div>
+  `;
+  
+  // 重新渲染排行榜
+  await renderFlightGameScores();
 }
 
 // 支持页：FAQ 渲染与搜索

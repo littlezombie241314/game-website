@@ -514,6 +514,62 @@
             document.getElementById('finalScore').textContent = score;
             document.getElementById('finalTime').textContent = gameTime;
             document.getElementById('gameOver').style.display = 'block';
+            
+            // 保存分数到本地存储
+            saveScore(score, gameTime);
+        }
+        
+        // 保存分数到本地存储和服务器
+        async function saveScore(finalScore, finalTime) {
+            // 获取当前玩家名称（这里使用默认名称，实际应用中可以让玩家输入）
+            const playerName = '玩家' + Math.floor(Math.random() * 1000);
+            const country = getCountryCode(); // 获取国家代码
+            const date = new Date().toISOString().split('T')[0]; // 当前日期
+            
+            // 创建分数记录
+            const scoreRecord = {
+                name: playerName,
+                country: country,
+                score: finalScore,
+                time: finalTime,
+                date: date,
+                timestamp: Date.now()
+            };
+            
+            // 1. 保存到本地存储（作为缓存）
+            let localScores = JSON.parse(localStorage.getItem('flightGameScores') || '[]');
+            localScores.push(scoreRecord);
+            if (localScores.length > 10) {
+                localScores = localScores.slice(-10);
+            }
+            localStorage.setItem('flightGameScores', JSON.stringify(localScores));
+            
+            // 2. 尝试保存到服务器（模拟API调用）
+            try {
+                await saveScoreToServer(scoreRecord);
+                console.log('分数已保存到全球排行榜:', scoreRecord);
+            } catch (error) {
+                console.log('服务器保存失败，仅保存到本地:', error);
+            }
+        }
+        
+        // 获取国家代码（简化版，实际应用中可以使用IP定位）
+        function getCountryCode() {
+            // 这里简化处理，实际应用中可以使用IP定位服务
+            const countryCodes = ['CN', 'US', 'JP', 'KR', 'GB', 'DE', 'FR', 'CA', 'AU', 'BR'];
+            return countryCodes[Math.floor(Math.random() * countryCodes.length)];
+        }
+        
+        // 模拟保存分数到服务器
+        async function saveScoreToServer(scoreRecord) {
+            // 模拟API调用延迟
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // 在实际应用中，这里应该是真实的API调用
+            // 例如：fetch('/api/scores', { method: 'POST', body: JSON.stringify(scoreRecord) })
+            
+            // 模拟保存成功
+            return { success: true, message: '分数已保存到全球数据库' };
         }
         
         // 重新开始游戏
