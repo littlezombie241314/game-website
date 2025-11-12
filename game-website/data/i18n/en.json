@@ -1,46 +1,42 @@
 {
-  "brand": "Orion Games",
+  "brand": "SkyWings",
   "nav": {
     "home": "Home",
     "games": "Games",
-    "news": "News",
-    "matches": "Matches",
+    "destinations": "Destinations",
+    "guides": "Flight Guides",
     "community": "Community",
     "support": "Support",
-    "careers": "Careers",
     "about": "About",
     "contact": "Contact",
-    "playNow": "Play Now",
-    "theme": "Toggle Theme",
-    "lang": "Language"
+    "theme": "Theme",
+    "playNow": "Play Now"
   },
   "index": {
-    "heroTitle": "Craft a universe for female players",
-    "heroSub": "From competitive battles to vast galactic exploration, we put creativity and playability into every title. Join millions on their adventure.",
-    "browseGames": "Browse Games",
-    "viewNews": "View Latest News",
-    "popular": "Popular Games",
-    "features": "Key Features",
-    "spotlight": "Spotlight",
-    "latestNews": "Latest News",
+    "heroTitle": "Start Your Flight Travel Adventure for Girls",
+    "heroSub": "A flight travel game specially designed for girls, explore world beauties and experience the joy of free flight. From romantic Paris to mysterious Maldives, start your flight journey!",
+    "browseGames": "Start Game",
+    "viewDestinations": "View Destinations",
+    "popular": "Popular Flight Games",
+    "popularGames": "Popular Games",
     "viewAll": "View All",
-    "moreNews": "More News",
-    "joinCommunity": "Join Community"
+    "latest": "Latest Updates",
+    "features": "Features",
+    "spotlight": "Hot Recommendations"
   },
-  "games": {
-    "title": "All Games",
-    "search": "Search game title...",
-    "all": "All Genres"
+  "discussions": {
+    "title": "Discussions",
+    "search": "Search discussion topics...",
+    "all": "All Topics"
   },
-  "news": {
-    "title": "News & Announcements",
-    "search": "Search news...",
-    "rss": "Subscribe RSS",
-    "readMore": "Read More"
+  "aircrafts": {
+    "title": "Aircraft Showcase",
+    "search": "Search aircraft name...",
+    "all": "All Types"
   },
   "community": {
     "title": "Community",
-    "ugc": "UGC Creations",
+    "ugc": "User Shares",
     "submit": "Submit Work",
     "search": "Search by title or author...",
     "typeAll": "All Types",
@@ -51,7 +47,7 @@
   "support": {
     "title": "Help & Support",
     "search": "Search issues...",
-    "rules": "Player Rules",
+    "rules": "Community Rules",
     "security": "Security Center",
     "faq": "FAQ",
     "ticket": "Submit Ticket",

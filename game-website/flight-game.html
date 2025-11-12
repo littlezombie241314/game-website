@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>飞行器躲避陨石 - SkyWings</title>
+    <meta name="description" content="控制飞行器躲避陨石，挑战你的反应速度！">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <style>
+        /* 游戏页面专用样式 */
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, 
+                #ffb6c1 0%, 
+                #ffd8cc 25%, 
+                #c3b6ff 50%, 
+                #e3ddff 75%, 
+                #87ceeb 100%);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-canvas {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(255, 183, 193, 0.3);
+        }
+
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #6a4c93;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            color: #2a2220;
+            display: none;
+            box-shadow: 0 0 30px rgba(255, 183, 193, 0.5);
+        }
+
+        .game-over h2 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .game-over p {
+            margin-bottom: 30px;
+            font-size: 18px;
+            color: #786460;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #ffb7a3, #ff9e87);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 15px rgba(255, 183, 163, 0.4);
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 183, 163, 0.6);
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(42, 34, 32, 0.8);
+            text-align: center;
+            font-size: 14px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .game-canvas {
+                width: 95vw !important;
+                height: 70vh !important;
+            }
+            
+            .game-ui {
+                font-size: 16px;
+                top: 10px;
+                left: 10px;
+            }
+            
+            .instructions {
+                font-size: 12px;
+                bottom: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-canvas {
+                width: 98vw !important;
+                height: 60vh !important;
+            }
+            
+            .game-over {
+                padding: 20px;
+                width: 90%;
+            }
+            
+            .game-over h2 {
+                font-size: 24px;
+            }
+            
+            .game-over p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container nav">
+            <a class="brand" href="index.html" aria-label="返回首页">
+                <span class="brand-badge" aria-hidden="true"></span>
+                <span>SkyWings</span>
+            </a>
+            <nav class="nav-links" aria-label="主导航">
+                <a class="nav-link" href="index.html">首页</a>
+                <a class="nav-link" href="games.html">游戏</a>
+                <a class="nav-link" href="community.html">社区</a>
+                <a class="nav-link" href="support.html">支持</a>
+            </nav>
+            <div class="nav-actions">
+                <a class="btn" href="index.html">返回首页</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="game-container">
+        <div class="game-ui">
+            <div>得分: <span id="score">0</span></div>
+            <div>生存时间: <span id="time">0</span>秒</div>
+        </div>
+        
+        <canvas id="gameCanvas" class="game-canvas" width="800" height="600"></canvas>
+        
+        <div id="gameOver" class="game-over">
+            <h2>游戏结束！</h2>
+            <p>最终得分: <span id="finalScore">0</span></p>
+            <p>生存时间: <span id="finalTime">0</span>秒</p>
+            <button class="restart-btn" onclick="restartGame()">重新开始</button>
+        </div>
+        
+        <div class="instructions">
+            <p>使用键盘方向键 ← → 控制飞行器左右移动，躲避陨石！</p>
+        </div>
+    </main>
+
+    <script>
+        // 游戏变量
+        let canvas, ctx;
+        let spaceship = {
+            x: 400,
+            y: 500,
+            width: 40,
+            height: 30,
+            speed: 5
+        };
+        
+        let meteors = [];
+        let score = 0;
+        let gameTime = 0;
+        let gameRunning = true;
+        let keys = {};
+        
+        // 初始化游戏
+        function initGame() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 调整画布大小以适应屏幕
+            resizeCanvas();
+            
+            // 监听键盘事件
+            window.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+            });
+            
+            window.addEventListener('keyup', (e) => {
+                keys[e.key] = false;
+            });
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 开始游戏循环
+            gameLoop();
+            
+            // 开始计时器
+            setInterval(() => {
+                if (gameRunning) {
+                    gameTime++;
+                    document.getElementById('time').textContent = gameTime;
+                }
+            }, 1000);
+            
+            // 生成陨石
+            setInterval(() => {
+                if (gameRunning) {
+                    createMeteor();
+                }
+            }, 1000);
+        }
+        
+        // 调整画布大小
+        function resizeCanvas() {
+            const maxWidth = window.innerWidth - 40;
+            const maxHeight = window.innerHeight - 200;
+            
+            const aspectRatio = 800 / 600;
+            let newWidth = maxWidth;
+            let newHeight = newWidth / aspectRatio;
+            
+            if (newHeight > maxHeight) {
+                newHeight = maxHeight;
+                newWidth = newHeight * aspectRatio;
+            }
+            
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            
+            // 调整飞行器位置
+            spaceship.x = newWidth / 2;
+            spaceship.y = newHeight - 50;
+        }
+        
+        // 创建陨石
+        function createMeteor() {
+            const size = Math.random() * 30 + 20;
+            const speed = Math.random() * 3 + 2;
+            
+            meteors.push({
+                x: Math.random() * (canvas.width - size),
+                y: -size,
+                width: size,
+                height: size,
+                speed: speed
+            });
+        }
+        
+        // 更新游戏状态
+        function update() {
+            // 移动飞行器
+            if (keys['ArrowLeft'] && spaceship.x > 0) {
+                spaceship.x -= spaceship.speed;
+            }
+            if (keys['ArrowRight'] && spaceship.x < canvas.width - spaceship.width) {
+                spaceship.x += spaceship.speed;
+            }
+            
+            // 移动陨石并检测碰撞
+            for (let i = meteors.length - 1; i >= 0; i--) {
+                const meteor = meteors[i];
+                meteor.y += meteor.speed;
+                
+                // 检测碰撞
+                if (checkCollision(spaceship, meteor)) {
+                    gameOver();
+                    return;
+                }
+                
+                // 移除超出屏幕的陨石
+                if (meteor.y > canvas.height) {
+                    meteors.splice(i, 1);
+                    score += 10;
+                    document.getElementById('score').textContent = score;
+                }
+            }
+        }
+        
+        // 检测碰撞
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+        
+        // 渲染游戏
+        function render() {
+            // 清空画布
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制星空背景
+            drawStars();
+            
+            // 绘制飞行器
+            drawSpaceship();
+            
+            // 绘制陨石
+            drawMeteors();
+        }
+        
+        // 绘制星空
+        function drawStars() {
+            ctx.fillStyle = 'white';
+            for (let i = 0; i < 50; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = Math.random() * 2;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // 绘制飞行器 - 渐变科技风格歼灭机（向上倾斜20度）
+        function drawSpaceship() {
+            const centerX = spaceship.x + spaceship.width / 2;
+            const centerY = spaceship.y - spaceship.height / 2;
+            const angle = -20 * Math.PI / 180; // 向上倾斜20度
+            
+            // 保存当前画布状态
+            ctx.save();
+            
+            // 平移和旋转画布
+            ctx.translate(centerX, centerY);
+            ctx.rotate(angle);
+            
+            // 创建机身渐变 - 深蓝到紫色的科技渐变
+            const bodyGradient = ctx.createLinearGradient(0, -spaceship.height / 2, 0, spaceship.height / 2);
+            bodyGradient.addColorStop(0, '#0a0a2a'); // 深蓝色顶部
+            bodyGradient.addColorStop(0.5, '#1a1a4a'); // 中蓝色
+            bodyGradient.addColorStop(1, '#2a2a6a'); // 浅蓝色底部
+            
+            // 绘制机身主体 - 渐变科技风格
+            ctx.fillStyle = bodyGradient;
+            ctx.beginPath();
+            ctx.moveTo(0, -spaceship.height / 2);
+            ctx.lineTo(-spaceship.width / 3, spaceship.height / 4);
+            ctx.lineTo(spaceship.width / 3, spaceship.height / 4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制机头 - 紫色渐变
+            const noseGradient = ctx.createLinearGradient(0, -spaceship.height / 2, 0, -spaceship.height / 4);
+            noseGradient.addColorStop(0, '#6a00ff'); // 深紫色
+            noseGradient.addColorStop(1, '#8a2be2'); // 浅紫色
+            
+            ctx.fillStyle = noseGradient;
+            ctx.beginPath();
+            ctx.moveTo(0, -spaceship.height / 2);
+            ctx.lineTo(-spaceship.width / 8, -spaceship.height / 4);
+            ctx.lineTo(spaceship.width / 8, -spaceship.height / 4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制主翼 - 蓝色渐变
+            const wingGradient = ctx.createLinearGradient(-spaceship.width / 2, 0, -spaceship.width / 3, 0);
+            wingGradient.addColorStop(0, '#0044cc'); // 深蓝色
+            wingGradient.addColorStop(1, '#0066ff'); // 浅蓝色
+            
+            ctx.fillStyle = wingGradient;
+            ctx.beginPath();
+            ctx.moveTo(-spaceship.width / 2, 0);
+            ctx.lineTo(-spaceship.width / 3, -spaceship.height / 6);
+            ctx.lineTo(-spaceship.width / 3, spaceship.height / 6);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(spaceship.width / 2, 0);
+            ctx.lineTo(spaceship.width / 3, -spaceship.height / 6);
+            ctx.lineTo(spaceship.width / 3, spaceship.height / 6);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制尾翼 - 青色渐变
+            const tailGradient = ctx.createLinearGradient(0, spaceship.height / 4, 0, spaceship.height / 2);
+            tailGradient.addColorStop(0, '#00bcd4'); // 青色
+            tailGradient.addColorStop(1, '#008ba3'); // 深青色
+            
+            ctx.fillStyle = tailGradient;
+            ctx.beginPath();
+            ctx.moveTo(-spaceship.width / 6, spaceship.height / 4);
+            ctx.lineTo(0, spaceship.height / 2);
+            ctx.lineTo(spaceship.width / 6, spaceship.height / 4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制引擎喷口 - 橙色渐变
+            const engineGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, spaceship.width / 10);
+            engineGradient.addColorStop(0, '#ff6b35'); // 亮橙色
+            engineGradient.addColorStop(1, '#ff4500'); // 深橙色
+            
+            ctx.fillStyle = engineGradient;
+            ctx.beginPath();
+            ctx.arc(-spaceship.width / 4, spaceship.height / 3, spaceship.width / 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(spaceship.width / 4, spaceship.height / 3, spaceship.width / 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制驾驶舱 - 蓝色玻璃效果
+            const cockpitGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, spaceship.width / 8);
+            cockpitGradient.addColorStop(0, '#4fc3f7'); // 浅蓝色
+            cockpitGradient.addColorStop(1, '#0288d1'); // 深蓝色
+            
+            ctx.fillStyle = cockpitGradient;
+            ctx.beginPath();
+            ctx.arc(0, -spaceship.height / 6, spaceship.width / 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 添加科技风格发光效果
+            ctx.shadowColor = '#00bcd4';
+            ctx.shadowBlur = 25;
+            
+            // 绘制引擎火焰 - 渐变火焰效果
+            const flameGradient = ctx.createLinearGradient(0, spaceship.height / 3, 0, spaceship.height / 2);
+            flameGradient.addColorStop(0, '#ff9800'); // 橙色
+            flameGradient.addColorStop(0.5, '#ff5722'); // 红色
+            flameGradient.addColorStop(1, '#d32f2f'); // 深红色
+            
+            ctx.fillStyle = flameGradient;
+            ctx.beginPath();
+            ctx.moveTo(-spaceship.width / 4, spaceship.height / 3);
+            ctx.lineTo(-spaceship.width / 3, spaceship.height / 2);
+            ctx.lineTo(-spaceship.width / 5, spaceship.height / 3);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(spaceship.width / 4, spaceship.height / 3);
+            ctx.lineTo(spaceship.width / 3, spaceship.height / 2);
+            ctx.lineTo(spaceship.width / 5, spaceship.height / 3);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.shadowBlur = 0;
+            
+            // 添加科技风格细节线条 - 青色线条
+            ctx.strokeStyle = '#00bcd4';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-spaceship.width / 4, 0);
+            ctx.lineTo(spaceship.width / 4, 0);
+            ctx.stroke();
+            
+            // 添加机翼细节
+            ctx.beginPath();
+            ctx.moveTo(-spaceship.width / 2, 0);
+            ctx.lineTo(-spaceship.width / 3, 0);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(spaceship.width / 2, 0);
+            ctx.lineTo(spaceship.width / 3, 0);
+            ctx.stroke();
+            
+            // 添加机头细节线条
+            ctx.beginPath();
+            ctx.moveTo(0, -spaceship.height / 2);
+            ctx.lineTo(0, -spaceship.height / 4);
+            ctx.stroke();
+            
+            // 恢复画布状态
+            ctx.restore();
+        }
+        
+        // 绘制陨石
+        function drawMeteors() {
+            meteors.forEach(meteor => {
+                ctx.fillStyle = '#8a8ac0';
+                ctx.beginPath();
+                ctx.arc(meteor.x + meteor.width/2, meteor.y + meteor.height/2, meteor.width/2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 添加陨石纹理
+                ctx.fillStyle = '#6a6a9a';
+                ctx.beginPath();
+                ctx.arc(meteor.x + meteor.width/3, meteor.y + meteor.height/3, meteor.width/6, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+        
+        // 游戏结束
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalTime').textContent = gameTime;
+            document.getElementById('gameOver').style.display = 'block';
+        }
+        
+        // 重新开始游戏
+        function restartGame() {
+            meteors = [];
+            score = 0;
+            gameTime = 0;
+            gameRunning = true;
+            
+            document.getElementById('score').textContent = '0';
+            document.getElementById('time').textContent = '0';
+            document.getElementById('gameOver').style.display = 'none';
+            
+            // 重置飞行器位置
+            spaceship.x = canvas.width / 2;
+            spaceship.y = canvas.height - 50;
+        }
+        
+        // 游戏主循环
+        function gameLoop() {
+            if (gameRunning) {
+                update();
+                render();
+            }
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // 页面加载完成后初始化游戏
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>

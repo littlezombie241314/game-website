@@ -1,14 +1,12 @@
 {
   "features": [
-    { "id": "f1", "title": "跨平台联机", "desc": "PC/主机互通，随时与好友开黑。", "cta": { "text": "了解跨平台", "href": "news-detail.html?id=crossplay-beta" } },
-    { "id": "f2", "title": "创意工坊", "desc": "UGC 模板与工具开放，激发无限想象。", "cta": { "text": "前往 UGC", "href": "community.html#ugc-submit" } },
-    { "id": "f3", "title": "电竞生态", "desc": "全年赛事体系，逐梦职业舞台。", "cta": { "text": "查看赛事", "href": "matches.html" } }
+    { "id": "f1", "title": "全球旅游目的地", "desc": "探索世界各地的美丽景点，从浪漫巴黎到神秘马尔代夫，开启你的飞行之旅。", "cta": { "text": "查看目的地", "href": "destinations.html" } },
+    { "id": "f2", "title": "飞行游戏体验", "desc": "体验真实的飞行模拟，学习飞行技巧，享受自由飞行的乐趣。", "cta": { "text": "开始游戏", "href": "games.html" } },
+    { "id": "f3", "title": "女生专属社区", "desc": "加入女生专属的飞行旅游社区，分享旅行经验，结识志同道合的朋友。", "cta": { "text": "加入社区", "href": "community.html" } }
   ],
   "spotlight": [
-    { "id": "s1", "title": "Shadowline Arena 赛季更新", "desc": "新英雄与战场登场，赛季奖励焕新。", "href": "news-detail.html?id=v2-announcement" },
-    { "id": "s2", "title": "Nebula Odyssey 星门开放", "desc": "开辟银河航线，建设你的星际家园。", "href": "games.html" },
-    { "id": "s3", "title": "Ironfront 战术锦集", "desc": "社区精选战术卡组，每周上新。", "href": "community.html" }
+    { "id": "s1", "title": "浪漫巴黎之旅", "desc": "飞越埃菲尔铁塔，俯瞰塞纳河美景，体验浪漫之都的空中之旅。", "href": "games.html" },
+    { "id": "s2", "title": "马尔代夫海岛游", "desc": "飞越蓝色泻湖，探索马尔代夫群岛，享受阳光沙滩的完美假期。", "href": "games.html" },
+    { "id": "s3", "title": "日本樱花季飞行", "desc": "飞越富士山，欣赏樱花盛开的壮丽景色，体验日本春季的浪漫。", "href": "games.html" }
   ]
 }
-
-

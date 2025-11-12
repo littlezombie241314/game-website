@@ -6,48 +6,46 @@ let I18N_CURRENT = I18N_DEFAULT_LANG;
 // 内置字典（用于本地 file:// 打开时 fetch 受限的回退）
 const I18N_EMBED = {
   zh: {
-    brand: "Orion Games",
+    brand: "SkyGirls Hub",
     nav: {
       home: "首页",
-      games: "游戏",
-      news: "新闻",
-      esports: "电竞",
+      aircrafts: "飞行器",
+      discussions: "讨论区",
+      guides: "飞行指南",
       community: "社区",
       support: "支持",
-      careers: "招聘",
       about: "关于",
       contact: "联系",
-      playNow: "立即游玩",
+      joinDiscussion: "加入讨论",
       theme: "",
       lang: "语言"
     },
     index: {
-      heroTitle: "打造属于女生玩家的宇宙",
-      heroSub: "从激烈的竞技对战到广袤的银河探索，我们致力于在每个作品中注入创造力与可玩性。加入数百万玩家的冒险旅程。",
-      browseGames: "浏览游戏目录",
-      viewNews: "查看最新公告",
-      popular: "热门游戏",
+      heroTitle: "欢迎来到女生飞行器讨论社区",
+      heroSub: "专为女生玩家打造的飞行器交流平台，分享飞行技巧、交流改装经验、结识同好飞友，一起探索天空的无限可能！",
+      joinDiscussion: "加入讨论",
+      viewGuides: "查看飞行指南",
+      popularAircrafts: "热门飞行器",
       features: "特色模块",
       spotlight: "焦点推荐",
-      latestNews: "最新新闻",
+      latestDiscussions: "最新讨论",
       viewAll: "查看全部",
-      moreNews: "更多资讯",
+      moreDiscussions: "更多讨论",
       joinCommunity: "加入社区"
     },
-    games: {
-      title: "全部游戏",
-      search: "搜索游戏名称...",
-      all: "全部类型"
+    discussions: {
+      title: "讨论区",
+      search: "搜索讨论话题...",
+      all: "全部话题"
     },
-    news: {
-      title: "新闻与公告",
-      search: "搜索新闻...",
-      rss: "订阅 RSS",
-      readMore: "阅读更多"
+    aircrafts: {
+      title: "飞行器展示",
+      search: "搜索飞行器名称...",
+      all: "全部类型"
     },
     community: {
       title: "社区",
-      ugc: "UGC 创作",
+      ugc: "用户分享",
       submit: "提交作品",
       search: "搜索作品标题或作者...",
       typeAll: "全部类型",
@@ -58,7 +56,7 @@ const I18N_EMBED = {
     support: {
       title: "帮助与支持",
       search: "搜索问题...",
-      rules: "玩家守则",
+      rules: "社区守则",
       security: "安全中心",
       faq: "常见问题",
       ticket: "提交工单",
@@ -69,48 +67,46 @@ const I18N_EMBED = {
     }
   },
   en: {
-    brand: "Orion Games",
+    brand: "SkyGirls Hub",
     nav: {
       home: "Home",
-      games: "Games",
-      news: "News",
-      esports: "Esports",
+      aircrafts: "Aircrafts",
+      discussions: "Discussions",
+      guides: "Flight Guides",
       community: "Community",
       support: "Support",
-      careers: "Careers",
       about: "About",
       contact: "Contact",
-      playNow: "Play Now",
+      joinDiscussion: "Join Discussion",
       theme: "",
       lang: "Language"
     },
     index: {
-      heroTitle: "Craft a universe for female players",
-      heroSub: "From competitive battles to vast galactic exploration, we put creativity and playability into every title. Join millions on their adventure.",
-      browseGames: "Browse Games",
-      viewNews: "View Latest News",
-      popular: "Popular Games",
+      heroTitle: "Welcome to SkyGirls Hub",
+      heroSub: "A flight discussion community for female players. Share flying tips, exchange modification experiences, and connect with fellow aviation enthusiasts to explore the infinite possibilities of the sky!",
+      joinDiscussion: "Join Discussion",
+      viewGuides: "View Flight Guides",
+      popularAircrafts: "Popular Aircrafts",
       features: "Key Features",
       spotlight: "Spotlight",
-      latestNews: "Latest News",
+      latestDiscussions: "Latest Discussions",
       viewAll: "View All",
-      moreNews: "More News",
+      moreDiscussions: "More Discussions",
       joinCommunity: "Join Community"
     },
-    games: {
-      title: "All Games",
-      search: "Search game title...",
-      all: "All Genres"
+    discussions: {
+      title: "Discussions",
+      search: "Search discussion topics...",
+      all: "All Topics"
     },
-    news: {
-      title: "News & Announcements",
-      search: "Search news...",
-      rss: "Subscribe RSS",
-      readMore: "Read More"
+    aircrafts: {
+      title: "Aircraft Showcase",
+      search: "Search aircraft name...",
+      all: "All Types"
     },
     community: {
       title: "Community",
-      ugc: "UGC Creations",
+      ugc: "User Shares",
       submit: "Submit Work",
       search: "Search by title or author...",
       typeAll: "All Types",
@@ -121,7 +117,7 @@ const I18N_EMBED = {
     support: {
       title: "Help & Support",
       search: "Search issues...",
-      rules: "Player Rules",
+      rules: "Community Rules",
       security: "Security Center",
       faq: "FAQ",
       ticket: "Submit Ticket",

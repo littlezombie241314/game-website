@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Orion Games - 官方网站</title>
-    <meta name="description" content="Orion Games 官方网站：探索我们的游戏、电竞赛事与社区活动。">
+    <title>SkyWings - 女生飞行旅游游戏</title>
+    <meta name="description" content="SkyWings - 专为女生打造的飞行旅游游戏，探索世界美景，体验自由飞行的乐趣。">
     <link rel="stylesheet" href="./assets/css/styles.css">
   </head>
   <body>
@@ -12,39 +12,42 @@
       <div class="container nav">
         <a class="brand" href="index.html" aria-label="返回首页">
           <span class="brand-badge" aria-hidden="true"></span>
-          <span data-i18n="brand">Orion Games</span>
+          <span data-i18n="brand">SkyWings</span>
         </a>
         <nav class="nav-links" aria-label="主导航">
           <a class="nav-link" href="index.html" data-i18n="nav.home">首页</a>
           <a class="nav-link" href="games.html" data-i18n="nav.games">游戏</a>
-          <a class="nav-link" href="news.html" data-i18n="nav.news">新闻</a>
-          <a class="nav-link" href="matches.html" data-i18n="nav.matches">比赛</a>
+          <a class="nav-link" href="destinations.html" data-i18n="nav.destinations">旅游目的地</a>
+          <a class="nav-link" href="guides.html" data-i18n="nav.guides">飞行指南</a>
           <a class="nav-link" href="community.html" data-i18n="nav.community">社区</a>
           <a class="nav-link" href="support.html" data-i18n="nav.support">支持</a>
-          <a class="nav-link" href="careers.html" data-i18n="nav.careers">招聘</a>
           <a class="nav-link" href="about.html" data-i18n="nav.about">关于</a>
           <a class="nav-link" href="contact.html" data-i18n="nav.contact">联系</a>
         </nav>
         <div class="nav-actions">
-          <select id="lang-select" class="select" aria-label="Language">
-            <option value="zh">中文</option>
-            <option value="en">English</option>
-          </select>
-          <button id="theme-cycle-toggle" class="btn icon-btn" aria-label="颜色循环" title="颜色循环">🌈</button>
-          <button id="theme-toggle" class="btn icon-btn" data-i18n="nav.theme" aria-label="切换主题">🎨</button>
-          <a class="btn btn-primary" href="games.html" data-i18n="nav.playNow">立即游玩</a>
-        </div>
+
+            <select id="lang-select" class="select" aria-label="Language">
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+            </select>
+            <button id="theme-cycle-toggle" class="btn icon-btn" aria-label="颜色循环" title="颜色循环">🌈</button>
+            <button id="theme-toggle" class="btn icon-btn" data-i18n="nav.theme" aria-label="切换主题">🎨</button>
+            <a class="btn btn-primary" href="flight-game.html" data-i18n="nav.playNow">立即游玩</a>
+          </div>
       </div>
     </header>
 
     <main>
       <section class="hero container">
+        <!-- 水果掉落容器 -->
+        <div id="fruit-container" class="fruit-container"></div>
+        
         <div>
-          <h1 class="hero-title" data-i18n="index.heroTitle">打造属于女生玩家的宇宙</h1>
-          <p class="hero-sub" data-i18n="index.heroSub">从激烈的竞技对战到广袤的银河探索，我们致力于在每个作品中注入创造力与可玩性。加入数百万玩家的冒险旅程。</p>
+          <h1 class="hero-title" data-i18n="index.heroTitle">开启属于女生的飞行旅游冒险</h1>
+          <p class="hero-sub" data-i18n="index.heroSub">专为女生打造的飞行旅游游戏，探索世界美景，体验自由飞行的乐趣。从浪漫的巴黎到神秘的马尔代夫，开启你的飞行之旅！</p>
           <div class="hero-cta">
-            <a class="btn btn-primary" href="games.html" data-i18n="index.browseGames">浏览游戏目录</a>
-            <a class="btn" href="news.html" data-i18n="index.viewNews">查看最新公告</a>
+            <a class="btn btn-primary" href="flight-game.html" data-i18n="index.browseGames">开始游戏</a>
+            <a class="btn" href="destinations.html" data-i18n="index.viewDestinations">查看目的地</a>
           </div>
         </div>
         <div class="hero-card">
@@ -76,40 +79,45 @@
         </div>
       </section>
 
-      <section class="container section">
-        <div class="section-head">
-          <h2 class="section-title" data-i18n="index.popular">热门游戏</h2>
-          <a class="btn" href="games.html" data-i18n="index.viewAll">查看全部</a>
-        </div>
-        <div class="grid grid-4">
-          <article class="card">
-            <div class="card-media" aria-hidden="true"></div>
-            <div class="card-body">
-              <h3 class="card-title">Shadowline Arena</h3>
-              <p class="muted">快节奏 5v5 对战，职业与战术自由搭配。</p>
+      <section class="section container">
+        <h2 class="section-title" data-i18n="index.popular">热门飞行游戏</h2>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">浪漫巴黎之旅</h3>
+              <div class="card-badge">新品</div>
             </div>
-          </article>
-          <article class="card">
-            <div class="card-media" aria-hidden="true"></div>
             <div class="card-body">
-              <h3 class="card-title">Nebula Odyssey</h3>
-              <p class="muted">穿越群星的探索与建造之旅。</p>
+              <p>飞越埃菲尔铁塔，俯瞰塞纳河美景，体验浪漫之都的空中之旅。</p>
+              <div class="card-actions">
+                <a class="btn btn-primary" href="flight-game.html">开始游玩</a>
+              </div>
             </div>
-          </article>
-          <article class="card">
-            <div class="card-media" aria-hidden="true"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">马尔代夫海岛游</h3>
+              <div class="card-badge">热门</div>
+            </div>
             <div class="card-body">
-              <h3 class="card-title">Ironfront Tactics</h3>
-              <p class="muted">即时战略与纵深军备系统。</p>
+              <p>飞越蓝色泻湖，探索马尔代夫群岛，享受阳光沙滩的完美假期。</p>
+              <div class="card-actions">
+                <a class="btn btn-primary" href="flight-game.html">开始游玩</a>
+              </div>
             </div>
-          </article>
-          <article class="card">
-            <div class="card-media" aria-hidden="true"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">日本樱花季</h3>
+              <div class="card-badge">推荐</div>
+            </div>
             <div class="card-body">
-              <h3 class="card-title">Aegis: Dawn</h3>
-              <p class="muted">高能战斗与装备构筑。</p>
+              <p>飞越富士山，欣赏樱花盛开的壮丽景色，体验日本春季的浪漫。</p>
+              <div class="card-actions">
+                <a class="btn btn-primary" href="flight-game.html">开始游玩</a>
+              </div>
             </div>
-          </article>
+          </div>
         </div>
       </section>
 
@@ -126,7 +134,7 @@
       <section class="container section">
         <div class="section-head">
           <h2 class="section-title" data-i18n="index.spotlight">焦点推荐</h2>
-          <a class="btn" href="news.html" data-i18n="index.moreNews">更多资讯</a>
+          <a class="btn" href="discussions.html" data-i18n="index.moreDiscussions">更多讨论</a>
         </div>
         <div id="home-spotlight" class="grid grid-3">
           <!-- 动态渲染 -->
@@ -135,8 +143,8 @@
 
       <section class="container section">
         <div class="section-head">
-          <h2 class="section-title" data-i18n="index.latestNews">最新新闻</h2>
-          <a class="btn" href="news.html" data-i18n="news.title">新闻与公告</a>
+          <h2 class="section-title" data-i18n="index.latestDiscussions">最新讨论</h2>
+          <a class="btn" href="discussions.html" data-i18n="discussions.title">讨论区</a>
         </div>
         <div id="home-news" class="grid grid-4">
           <!-- 动态渲染 -->
@@ -149,35 +157,109 @@
         <div>
           <div class="brand" style="margin-bottom:8px">
             <span class="brand-badge" aria-hidden="true"></span>
-            <span>Orion Games</span>
+            <span>SkyWings</span>
           </div>
-          <p class="muted">打造沉浸与乐趣并存的互动娱乐体验。</p>
+          <p class="muted">专为女生打造的飞行旅游游戏，探索世界美景，体验自由飞行的乐趣。</p>
+          <div style="margin-top:12px; display:flex; gap:12px">
+            <a href="#" aria-label="微博" style="font-size:18px">📱</a>
+            <a href="#" aria-label="微信" style="font-size:18px">💬</a>
+            <a href="#" aria-label="小红书" style="font-size:18px">📕</a>
+          </div>
         </div>
         <div>
-          <h4>产品</h4>
-          <div><a href="games.html">全部游戏</a></div>
-          <div><a href="news.html">更新公告</a></div>
-          <div><a href="esports.html">电竞赛事</a></div>
+          <h4>游戏</h4>
+          <div><a href="games.html">游戏列表</a></div>
+          <div><a href="games.html">最新游戏</a></div>
+          <div><a href="games.html">热门游戏</a></div>
         </div>
         <div>
-          <h4>公司</h4>
-          <div><a href="about.html">关于我们</a></div>
-          <div><a href="careers.html">加入我们</a></div>
-          <div><a href="contact.html">商务合作</a></div>
+          <h4>旅游目的地</h4>
+          <div><a href="destinations.html">亚洲目的地</a></div>
+          <div><a href="destinations.html">欧洲目的地</a></div>
+          <div><a href="destinations.html">海岛目的地</a></div>
         </div>
         <div>
           <h4>支持</h4>
           <div><a href="support.html">帮助中心</a></div>
-          <div><a href="community.html">社区与反馈</a></div>
-          <div><a href="support.html#faq">常见问题</a></div>
+          <div><a href="support.html">常见问题</a></div>
+          <div><a href="support.html">联系我们</a></div>
         </div>
       </div>
       <div class="container copyright">
-        © <span id="year"></span> Orion Games. All rights reserved.
+        <p>© 2024 SkyWings. 保留所有权利。</p>
+        <div style="display:flex; gap:16px">
+          <a href="privacy.html">隐私政策</a>
+          <a href="terms.html">服务条款</a>
+        </div>
       </div>
     </footer>
 
     <script src="./assets/js/i18n.js"></script>
     <script src="./assets/js/main.js"></script>
+    
+    <script>
+      // 水果掉落效果
+      function createFruit() {
+        const container = document.getElementById('fruit-container');
+        const fruit = document.createElement('div');
+        
+        // 随机选择水果类型
+        const fruits = [
+          {type: 'apple', emoji: '🍎'},
+          {type: 'banana', emoji: '🍌'},
+          {type: 'orange', emoji: '🍊'},
+          {type: 'strawberry', emoji: '🍓'},
+          {type: 'grape', emoji: '🍇'},
+          {type: 'watermelon', emoji: '🍉'},
+          {type: 'kiwi', emoji: '🥝'}
+        ];
+        const fruitData = fruits[Math.floor(Math.random() * fruits.length)];
+        
+        fruit.className = `fruit ${fruitData.type}`;
+        fruit.setAttribute('data-fruit', fruitData.emoji);
+        
+        // 随机位置（从屏幕顶部开始）
+        const startX = Math.random() * window.innerWidth;
+        fruit.style.left = startX + 'px';
+        fruit.style.top = '-50px';
+        
+        // 随机大小
+        const size = Math.random() * 40 + 20; // 20-60px
+        fruit.style.width = size + 'px';
+        fruit.style.height = size + 'px';
+        
+        // 随机旋转角度
+        const rotation = Math.random() * 360;
+        fruit.style.setProperty('--rotation', rotation + 'deg');
+        
+        // 随机动画时长
+        const duration = Math.random() * 3 + 5; // 5-8秒
+        fruit.style.animationDuration = duration + 's';
+        
+        container.appendChild(fruit);
+        
+        // 动画结束后移除元素
+        setTimeout(() => {
+          if (fruit.parentNode) {
+            fruit.parentNode.removeChild(fruit);
+          }
+        }, duration * 1000);
+      }
+      
+      // 开始水果掉落
+      function startFruitFall() {
+        // 每300毫秒创建一个新水果
+        setInterval(createFruit, 300);
+      }
+      
+      // 页面加载完成后开始水果掉落
+      window.addEventListener('load', startFruitFall);
+      
+      // 窗口大小变化时重新调整水果位置
+      window.addEventListener('resize', () => {
+        const container = document.getElementById('fruit-container');
+        container.innerHTML = ''; // 清空现有水果
+      });
+    </script>
   </body>
 </html>
