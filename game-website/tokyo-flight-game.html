@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>东京赛车飞行 - SkyWings</title>
+    <meta name="description" content="在东京都市上空体验马里奥赛车风格的飞行竞速游戏！">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <style>
+        /* 东京赛车主题游戏页面专用样式 */
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(180deg, 
+                #FF6B9D 0%, 
+                #FF8E53 25%, 
+                #FFD166 50%, 
+                #06D6A0 75%, 
+                #118AB2 100%);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-canvas {
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            border-radius: 15px;
+            box-shadow: 0 0 60px rgba(255, 107, 157, 0.4);
+        }
+
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 107, 157, 0.8);
+            background: rgba(255, 107, 157, 0.7);
+            padding: 10px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(17, 138, 178, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            color: #ffffff;
+            display: none;
+            box-shadow: 0 0 40px rgba(255, 107, 157, 0.6);
+            border: 3px solid rgba(255, 107, 157, 0.6);
+        }
+
+        .game-over h2 {
+            color: #FFD166;
+            margin-bottom: 20px;
+            font-size: 32px;
+            text-shadow: 0 0 10px rgba(255, 209, 102, 0.8);
+        }
+
+        .game-over p {
+            margin-bottom: 30px;
+            font-size: 18px;
+            color: #FFD166;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #FF6B9D, #FF8E53);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.6);
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            font-size: 14px;
+            text-shadow: 0 0 5px rgba(255, 107, 157, 0.8);
+            background: rgba(255, 107, 157, 0.6);
+            padding: 10px 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 道具栏样式 */
+        .powerup-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 107, 157, 0.7);
+            padding: 10px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 107, 157, 0.8);
+        }
+
+        .powerup-icon {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        /* 触摸控制按钮 */
+        .touch-controls {
+            position: absolute;
+            bottom: 100px;
+            width: 100%;
+            display: none;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 107, 157, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:active {
+            background: rgba(255, 107, 157, 0.9);
+            transform: scale(0.95);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .game-canvas {
+                width: 95vw !important;
+                height: 70vh !important;
+            }
+            
+            .game-ui {
+                font-size: 16px;
+                top: 10px;
+                left: 10px;
+            }
+            
+            .instructions {
+                font-size: 12px;
+                bottom: 10px;
+            }
+            
+            .powerup-display {
+                font-size: 14px;
+                top: 10px;
+                right: 10px;
+            }
+            
+            .touch-controls {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-canvas {
+                width: 98vw !important;
+                height: 60vh !important;
+            }
+            
+            .game-over {
+                padding: 20px;
+                width: 90%;
+            }
+            
+            .game-over h2 {
+                font-size: 24px;
+            }
+            
+            .game-over p {
+                font-size: 16px;
+            }
+            
+            .control-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container nav">
+            <a class="brand" href="index.html" aria-label="返回首页">
+                <span class="brand-badge" aria-hidden="true"></span>
+                <span>SkyWings</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="games.html">游戏</a>
+                <a href="destinations.html">目的地</a>
+                <a href="community.html">社区</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="game-container">
+        <div class="game-ui">
+            <span>距离: <span id="distance">0</span>m</span>
+            <span style="margin-left: 20px;">速度: <span id="speed">0</span>km/h</span>
+            <span style="margin-left: 20px;">道具: <span id="powerup-count">0</span></span>
+        </div>
+        
+        <div class="powerup-display">
+            <span class="powerup-icon" id="current-powerup">🚀</span>
+            <span id="powerup-name">无道具</span>
+        </div>
+        
+        <canvas id="gameCanvas" class="game-canvas" width="800" height="600"></canvas>
+        
+        <div class="instructions">
+            ↑↓←→ 控制飞行方向 | 空格键使用道具 | 收集道具获得特殊能力！
+        </div>
+        
+        <div class="touch-controls">
+            <div class="control-btn" id="left-btn">←</div>
+            <div class="control-btn" id="right-btn">→</div>
+            <div class="control-btn" id="up-btn">↑</div>
+            <div class="control-btn" id="down-btn">↓</div>
+            <div class="control-btn" id="powerup-btn">💥</div>
+        </div>
+        
+        <div class="game-over" id="gameOver">
+            <h2>游戏结束！</h2>
+            <p>你飞行了 <span id="final-distance">0</span> 米</p>
+            <p>收集了 <span id="final-powerups">0</span> 个道具</p>
+            <button class="restart-btn" onclick="restartGame()">重新开始</button>
+        </div>
+    </main>
+
+    <script>
+        // 游戏变量
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let gameRunning = true;
+        let distance = 0;
+        let speed = 0;
+        let powerupsCollected = 0;
+        let currentPowerup = null;
+        
+        // 音效变量
+        let engineSound = null;
+        let afterburnerSound = null;
+        let soundEnabled = true;
+        
+        // 玩家飞行器（西瓜太郎联名款）
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            width: 50,
+            height: 25,
+            speedX: 0,
+            speedY: 0,
+            maxSpeed: 12, // 优化最大速度
+            acceleration: 0.6, // 提高加速度，让响应更灵敏
+            friction: 0.85, // 降低摩擦力，让控制更流畅
+            afterburner: false // 加力燃烧器状态
+        };
+        
+        // 赛道和障碍物
+        const track = [];
+        const obstacles = [];
+        const powerups = [];
+        const buildings = [];
+        const clouds = [];
+        
+        // 道具类型
+        const POWERUP_TYPES = {
+            SPEED_BOOST: { emoji: '🚀', name: '速度提升', duration: 3000 },
+            SHIELD: { emoji: '🛡️', name: '护盾', duration: 5000 },
+            MAGNET: { emoji: '🧲', name: '磁铁', duration: 4000 },
+            STAR: { emoji: '⭐', name: '无敌星', duration: 6000 }
+        };
+        
+        // 初始化游戏
+        function initGame() {
+            // 初始化音效
+            initSounds();
+            
+            // 创建初始赛道
+            createInitialTrack();
+            
+            // 创建初始建筑
+            createInitialBuildings();
+            
+            // 创建初始云朵
+            createInitialClouds();
+            
+            // 开始游戏循环
+            gameLoop();
+        }
+        
+        // 初始化音效
+        function initSounds() {
+            try {
+                // 创建发动机音效（使用Web Audio API）
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 发动机基础音效
+                engineSound = {
+                    context: audioContext,
+                    oscillator: null,
+                    gainNode: null,
+                    playing: false
+                };
+                
+                // 加力燃烧器音效
+                afterburnerSound = {
+                    context: audioContext,
+                    oscillator: null,
+                    gainNode: null,
+                    playing: false
+                };
+                
+                console.log('音效系统初始化成功');
+            } catch (error) {
+                console.log('音效系统初始化失败，继续无声模式:', error);
+                soundEnabled = false;
+            }
+        }
+        
+        // 播放发动机音效
+        function playEngineSound(speedRatio) {
+            if (!soundEnabled || !engineSound.context) return;
+            
+            try {
+                if (!engineSound.playing) {
+                    engineSound.oscillator = engineSound.context.createOscillator();
+                    engineSound.gainNode = engineSound.context.createGain();
+                    
+                    engineSound.oscillator.connect(engineSound.gainNode);
+                    engineSound.gainNode.connect(engineSound.context.destination);
+                    
+                    engineSound.oscillator.type = 'sawtooth';
+                    engineSound.oscillator.frequency.value = 80 + speedRatio * 120; // 频率随速度变化
+                    engineSound.gainNode.gain.value = 0.1 + speedRatio * 0.1; // 音量随速度变化
+                    
+                    engineSound.oscillator.start();
+                    engineSound.playing = true;
+                } else {
+                    // 更新音效参数
+                    engineSound.oscillator.frequency.value = 80 + speedRatio * 120;
+                    engineSound.gainNode.gain.value = 0.1 + speedRatio * 0.1;
+                }
+            } catch (error) {
+                console.log('发动机音效播放失败:', error);
+            }
+        }
+        
+        // 播放加力燃烧器音效
+        function playAfterburnerSound() {
+            if (!soundEnabled || !afterburnerSound.context) return;
+            
+            try {
+                if (!afterburnerSound.playing) {
+                    afterburnerSound.oscillator = afterburnerSound.context.createOscillator();
+                    afterburnerSound.gainNode = afterburnerSound.context.createGain();
+                    
+                    afterburnerSound.oscillator.connect(afterburnerSound.gainNode);
+                    afterburnerSound.gainNode.connect(afterburnerSound.context.destination);
+                    
+                    afterburnerSound.oscillator.type = 'square';
+                    afterburnerSound.oscillator.frequency.value = 200;
+                    afterburnerSound.gainNode.gain.value = 0.15;
+                    
+                    afterburnerSound.oscillator.start();
+                    afterburnerSound.playing = true;
+                }
+            } catch (error) {
+                console.log('加力燃烧器音效播放失败:', error);
+            }
+        }
+        
+        // 停止加力燃烧器音效
+        function stopAfterburnerSound() {
+            if (!soundEnabled || !afterburnerSound.playing) return;
+            
+            try {
+                afterburnerSound.oscillator.stop();
+                afterburnerSound.playing = false;
+            } catch (error) {
+                console.log('加力燃烧器音效停止失败:', error);
+            }
+        }
+        
+        // 停止所有音效
+        function stopAllSounds() {
+            if (engineSound.playing) {
+                try {
+                    engineSound.oscillator.stop();
+                    engineSound.playing = false;
+                } catch (error) {
+                    console.log('发动机音效停止失败:', error);
+                }
+            }
+            
+            if (afterburnerSound.playing) {
+                try {
+                    afterburnerSound.oscillator.stop();
+                    afterburnerSound.playing = false;
+                } catch (error) {
+                    console.log('加力燃烧器音效停止失败:', error);
+                }
+            }
+        }
+        
+        // 创建初始赛道
+        function createInitialTrack() {
+            for (let i = 0; i < 20; i++) {
+                track.push({
+                    x: i * 80,
+                    y: canvas.height / 2 + Math.sin(i * 0.3) * 50,
+                    width: 80,
+                    height: 10,
+                    color: i % 2 === 0 ? '#FF6B9D' : '#FFD166'
+                });
+            }
+        }
+        
+        // 创建初始建筑
+        function createInitialBuildings() {
+            for (let i = 0; i < 15; i++) {
+                const height = Math.random() * 100 + 50;
+                buildings.push({
+                    x: Math.random() * canvas.width * 2,
+                    y: canvas.height - height,
+                    width: Math.random() * 40 + 20,
+                    height: height,
+                    color: `hsl(${Math.random() * 60 + 200}, 70%, 60%)`,
+                    windows: []
+                });
+                
+                // 为建筑添加窗户
+                const building = buildings[buildings.length - 1];
+                for (let j = 0; j < 3; j++) {
+                    for (let k = 0; k < 3; k++) {
+                        building.windows.push({
+                            x: building.x + 5 + j * (building.width - 10) / 3,
+                            y: building.y + 5 + k * (building.height - 10) / 3,
+                            width: (building.width - 10) / 3 - 5,
+                            height: (building.height - 10) / 3 - 5,
+                            lit: Math.random() > 0.3
+                        });
+                    }
+                }
+            }
+        }
+        
+        // 创建初始云朵
+        function createInitialClouds() {
+            for (let i = 0; i < 10; i++) {
+                clouds.push({
+                    x: Math.random() * canvas.width * 2,
+                    y: Math.random() * canvas.height * 0.4,
+                    width: Math.random() * 60 + 40,
+                    height: Math.random() * 30 + 20,
+                    speed: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+        
+        // 绘制玩家飞行器（西瓜太郎联名款）
+        function drawPlayer() {
+            ctx.save();
+            
+            // 检测是否处于高速状态（激活加力燃烧器）
+            const speedRatio = speed / player.maxSpeed;
+            player.afterburner = speedRatio > 0.7;
+            
+            // 西瓜太郎联名款飞行器主体 - 夏日西瓜风格
+            const centerX = player.x;
+            const centerY = player.y;
+            
+            // 机身主体（西瓜皮绿色）
+            const bodyGradient = ctx.createLinearGradient(
+                centerX - player.width/2, centerY,
+                centerX + player.width/2, centerY
+            );
+            bodyGradient.addColorStop(0, '#2E8B57'); // 深绿色
+            bodyGradient.addColorStop(0.5, '#3CB371'); // 中绿色
+            bodyGradient.addColorStop(1, '#2E8B57'); // 深绿色
+            
+            ctx.fillStyle = bodyGradient;
+            
+            // 机身主体（椭圆形西瓜形状）
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, player.width/2, player.height/2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 西瓜果肉部分（红色）
+            const fleshGradient = ctx.createRadialGradient(
+                centerX, centerY, 0,
+                centerX, centerY, player.width/2
+            );
+            fleshGradient.addColorStop(0, '#FF6B6B'); // 亮红色
+            fleshGradient.addColorStop(0.7, '#FF4757'); // 深红色
+            fleshGradient.addColorStop(1, '#FF3838'); // 最红色
+            
+            ctx.fillStyle = fleshGradient;
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, player.width/2 - 5, player.height/2 - 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 西瓜太郎标志性帽子（绿色帽子）
+            ctx.fillStyle = '#228B22'; // 森林绿
+            ctx.beginPath();
+            ctx.moveTo(centerX - player.width/3, centerY - player.height/2);
+            ctx.lineTo(centerX + player.width/3, centerY - player.height/2);
+            ctx.lineTo(centerX + player.width/4, centerY - player.height/4);
+            ctx.lineTo(centerX - player.width/4, centerY - player.height/4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 帽子装饰（白色条纹）
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(centerX - player.width/4, centerY - player.height/2, player.width/2, 3);
+            
+            // 西瓜太郎眼睛（黑色圆点）
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(centerX - player.width/8, centerY - player.height/8, player.width/12, 0, Math.PI * 2);
+            ctx.arc(centerX + player.width/8, centerY - player.height/8, player.width/12, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 西瓜太郎笑容（弧形）
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, player.width/6, 0.2 * Math.PI, 0.8 * Math.PI);
+            ctx.stroke();
+            
+            // 机翼（西瓜叶子形状）
+            ctx.fillStyle = '#32CD32'; // 酸橙绿
+            
+            // 左机翼（叶子形状）
+            ctx.beginPath();
+            ctx.moveTo(centerX - player.width/2, centerY);
+            ctx.quadraticCurveTo(centerX - player.width, centerY - player.height/4, centerX - player.width/2, centerY + player.height/2);
+            ctx.quadraticCurveTo(centerX - player.width/3, centerY + player.height/4, centerX - player.width/2, centerY);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 右机翼（叶子形状）
+            ctx.beginPath();
+            ctx.moveTo(centerX + player.width/2, centerY);
+            ctx.quadraticCurveTo(centerX + player.width, centerY - player.height/4, centerX + player.width/2, centerY + player.height/2);
+            ctx.quadraticCurveTo(centerX + player.width/3, centerY + player.height/4, centerX + player.width/2, centerY);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 尾翼（西瓜藤形状）
+            ctx.fillStyle = '#8B4513'; // 棕色
+            
+            // 垂直尾翼（藤蔓形状）
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY + player.height/2);
+            ctx.bezierCurveTo(
+                centerX - player.width/6, centerY + player.height/2,
+                centerX - player.width/8, centerY + player.height,
+                centerX, centerY + player.height
+            );
+            ctx.bezierCurveTo(
+                centerX + player.width/8, centerY + player.height,
+                centerX + player.width/6, centerY + player.height/2,
+                centerX, centerY + player.height/2
+            );
+            ctx.closePath();
+            ctx.fill();
+            
+            // 发动机喷口和加力燃烧器效果（西瓜太郎风格）
+            if (player.afterburner) {
+                // 加力燃烧器火焰效果（西瓜籽喷射）
+                for (let i = 0; i < 5; i++) {
+                    const seedX = centerX + (Math.random() - 0.5) * player.width/3;
+                    const seedY = centerY + player.height/2 + Math.random() * player.height;
+                    
+                    ctx.fillStyle = '#000000'; // 黑色西瓜籽
+                    ctx.beginPath();
+                    ctx.ellipse(seedX, seedY, 2, 4, Math.PI/4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // 火焰效果（红色光芒）
+                const flameGradient = ctx.createLinearGradient(
+                    centerX, centerY + player.height/2,
+                    centerX, centerY + player.height * 1.5
+                );
+                flameGradient.addColorStop(0, '#FF6B6B'); // 红色
+                flameGradient.addColorStop(0.5, '#FF4757'); // 深红色
+                flameGradient.addColorStop(1, 'rgba(255, 71, 87, 0)'); // 透明
+                
+                ctx.fillStyle = flameGradient;
+                ctx.globalAlpha = 0.7;
+                ctx.beginPath();
+                ctx.moveTo(centerX - player.width/6, centerY + player.height/2);
+                ctx.lineTo(centerX - player.width/4, centerY + player.height * 1.5);
+                ctx.lineTo(centerX + player.width/4, centerY + player.height * 1.5);
+                ctx.lineTo(centerX + player.width/6, centerY + player.height/2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+            } else {
+                // 普通发动机喷口（西瓜图案）
+                ctx.fillStyle = '#2E8B57';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY + player.height/2, player.width/6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 西瓜籽装饰
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.ellipse(centerX - 3, centerY + player.height/2, 1, 2, Math.PI/4, 0, Math.PI * 2);
+                ctx.ellipse(centerX + 3, centerY + player.height/2, 1, 2, -Math.PI/4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // 西瓜太郎联名标志（机身上部西瓜籽图案）
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.ellipse(centerX - 5, centerY - player.height/4, 1, 2, Math.PI/4, 0, Math.PI * 2);
+            ctx.ellipse(centerX + 5, centerY - player.height/4, 1, 2, -Math.PI/4, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 如果有道具效果，显示特效（西瓜太郎风格）
+            if (currentPowerup) {
+                ctx.strokeStyle = POWERUP_TYPES[currentPowerup.type].emoji === '⭐' ? '#FFD166' : 
+                                POWERUP_TYPES[currentPowerup.type].emoji === '🛡️' ? '#06D6A0' : '#FF6B6B';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([3, 5]); // 虚线效果
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, player.width/2 + 10, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // 飞行轨迹效果（西瓜太郎风格 - 西瓜籽轨迹）
+            if (speedRatio > 0.5) {
+                for (let i = 0; i < 4; i++) {
+                    const seedY = centerY + player.height + i * 15;
+                    const seedX = centerX + Math.sin(Date.now() * 0.01 + i) * 10;
+                    
+                    ctx.fillStyle = '#000000';
+                    ctx.globalAlpha = 0.8 - i * 0.2;
+                    ctx.beginPath();
+                    ctx.ellipse(seedX, seedY, 1, 2, Math.PI/4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1.0;
+            }
+            
+            // 西瓜太郎表情动画（根据速度变化）
+            if (speedRatio > 0.8) {
+                // 高速时显示兴奋表情（眼睛变大）
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.arc(centerX - player.width/8, centerY - player.height/8, player.width/10, 0, Math.PI * 2);
+                ctx.arc(centerX + player.width/8, centerY - player.height/8, player.width/10, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (speedRatio < 0.3) {
+                // 低速时显示困倦表情（眯眼）
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX - player.width/8 - 2, centerY - player.height/8);
+                ctx.lineTo(centerX - player.width/8 + 2, centerY - player.height/8);
+                ctx.moveTo(centerX + player.width/8 - 2, centerY - player.height/8);
+                ctx.lineTo(centerX + player.width/8 + 2, centerY - player.height/8);
+                ctx.stroke();
+            }
+            
+            ctx.restore();
+        }
+        
+        // 绘制赛道
+        function drawTrack() {
+            track.forEach(segment => {
+                ctx.fillStyle = segment.color;
+                ctx.fillRect(segment.x - distance % 80, segment.y, segment.width, segment.height);
+                
+                // 赛道边缘线
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(segment.x - distance % 80, segment.y);
+                ctx.lineTo(segment.x + segment.width - distance % 80, segment.y);
+                ctx.stroke();
+            });
+        }
+        
+        // 绘制建筑
+        function drawBuildings() {
+            buildings.forEach(building => {
+                const screenX = building.x - distance % (canvas.width * 2);
+                if (screenX > -building.width && screenX < canvas.width) {
+                    // 建筑主体
+                    ctx.fillStyle = building.color;
+                    ctx.fillRect(screenX, building.y, building.width, building.height);
+                    
+                    // 窗户
+                    building.windows.forEach(window => {
+                        ctx.fillStyle = window.lit ? '#FFD166' : '#333';
+                        ctx.fillRect(screenX + window.x - building.x, building.y + window.y - building.y, 
+                                   window.width, window.height);
+                    });
+                    
+                    // 建筑轮廓
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(screenX, building.y, building.width, building.height);
+                }
+            });
+        }
+        
+        // 绘制云朵
+        function drawClouds() {
+            clouds.forEach(cloud => {
+                const screenX = cloud.x - distance % (canvas.width * 2);
+                if (screenX > -cloud.width && screenX < canvas.width) {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(screenX, cloud.y, cloud.width/3, 0, Math.PI * 2);
+                    ctx.arc(screenX + cloud.width/3, cloud.y - cloud.height/4, cloud.width/4, 0, Math.PI * 2);
+                    ctx.arc(screenX - cloud.width/3, cloud.y - cloud.height/4, cloud.width/4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+        
+        // 绘制道具
+        function drawPowerups() {
+            powerups.forEach(powerup => {
+                const screenX = powerup.x - distance % (canvas.width * 2);
+                if (screenX > -20 && screenX < canvas.width) {
+                    // 道具旋转动画
+                    ctx.save();
+                    ctx.translate(screenX, powerup.y);
+                    ctx.rotate(Date.now() * 0.002);
+                    
+                    // 道具图标
+                    ctx.font = '24px Arial';
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(POWERUP_TYPES[powerup.type].emoji, 0, 0);
+                    
+                    // 道具光晕
+                    ctx.strokeStyle = '#FFD166';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 15, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    ctx.restore();
+                }
+            });
+        }
+        
+        // 绘制障碍物
+        function drawObstacles() {
+            obstacles.forEach(obstacle => {
+                const screenX = obstacle.x - distance % (canvas.width * 2);
+                if (screenX > -obstacle.width && screenX < canvas.width) {
+                    // 障碍物主体
+                    ctx.fillStyle = obstacle.color;
+                    ctx.fillRect(screenX, obstacle.y, obstacle.width, obstacle.height);
+                    
+                    // 障碍物细节
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(screenX, obstacle.y, obstacle.width, obstacle.height);
+                }
+            });
+        }
+        
+        // 更新游戏状态
+        function update() {
+            if (!gameRunning) return;
+            
+            // 更新距离和速度
+            distance += speed / 10;
+            speed = Math.max(2, Math.min(player.maxSpeed, speed + 0.01));
+            
+            // 更新玩家位置 - 改为垂直飞行方向
+            player.y += player.speedY;
+            player.x += player.speedX;
+            
+            // 边界检查 - 调整边界逻辑以适应垂直飞行
+            player.y = Math.max(player.height/2, Math.min(canvas.height - player.height/2, player.y));
+            player.x = Math.max(player.width/2, Math.min(canvas.width - player.width/2, player.x));
+            
+            // 摩擦力
+            player.speedY *= player.friction;
+            player.speedX *= player.friction;
+            
+            // 更新云朵位置
+            clouds.forEach(cloud => {
+                cloud.x -= cloud.speed;
+                if (cloud.x < -cloud.width) {
+                    cloud.x = canvas.width * 2;
+                }
+            });
+            
+            // 生成新赛道段
+            if (distance % 80 < 5) {
+                const lastSegment = track[track.length - 1];
+                track.push({
+                    x: lastSegment.x + lastSegment.width,
+                    y: canvas.height / 2 + Math.sin(track.length * 0.3) * 50,
+                    width: 80,
+                    height: 10,
+                    color: track.length % 2 === 0 ? '#FF6B9D' : '#FFD166'
+                });
+            }
+            
+            // 生成道具（每200距离生成一个）
+            if (Math.random() < 0.02 && distance % 200 < 5) {
+                const powerupTypes = Object.keys(POWERUP_TYPES);
+                const randomType = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
+                
+                powerups.push({
+                    x: distance + canvas.width + Math.random() * 200,
+                    y: Math.random() * canvas.height * 0.6 + canvas.height * 0.2,
+                    type: randomType,
+                    width: 30,
+                    height: 30
+                });
+            }
+            
+            // 生成障碍物（每100距离生成一个）
+            if (Math.random() < 0.03 && distance % 100 < 5) {
+                obstacles.push({
+                    x: distance + canvas.width + Math.random() * 100,
+                    y: Math.random() * canvas.height * 0.6 + canvas.height * 0.2,
+                    width: Math.random() * 30 + 20,
+                    height: Math.random() * 30 + 20,
+                    color: `hsl(${Math.random() * 60}, 70%, 40%)`
+                });
+            }
+            
+            // 检测道具碰撞
+            powerups.forEach((powerup, index) => {
+                const screenX = powerup.x - distance % (canvas.width * 2);
+                if (screenX > -20 && screenX < canvas.width) {
+                    if (Math.abs(player.x - screenX) < 25 && Math.abs(player.y - powerup.y) < 25) {
+                        // 收集道具
+                        currentPowerup = {
+                            type: powerup.type,
+                            collectedAt: Date.now()
+                        };
+                        powerupsCollected++;
+                        powerups.splice(index, 1);
+                        
+                        // 应用道具效果
+                        applyPowerupEffect(currentPowerup.type);
+                    }
+                }
+            });
+            
+            // 检测障碍物碰撞
+            if (!currentPowerup || (currentPowerup.type !== 'SHIELD' && currentPowerup.type !== 'STAR')) {
+                obstacles.forEach((obstacle, index) => {
+                    const screenX = obstacle.x - distance % (canvas.width * 2);
+                    if (screenX > -obstacle.width && screenX < canvas.width) {
+                        if (Math.abs(player.x - (screenX + obstacle.width/2)) < (player.width/2 + obstacle.width/2) &&
+                            Math.abs(player.y - (obstacle.y + obstacle.height/2)) < (player.height/2 + obstacle.height/2)) {
+                            // 碰撞障碍物
+                            gameOver();
+                        }
+                    }
+                });
+            }
+            
+            // 检查道具持续时间
+            if (currentPowerup && Date.now() - currentPowerup.collectedAt > POWERUP_TYPES[currentPowerup.type].duration) {
+                currentPowerup = null;
+            }
+            
+            // 清理屏幕外的对象
+            cleanupObjects();
+            
+            // 更新UI
+            updateUI();
+        }
+        
+        // 应用道具效果
+        function applyPowerupEffect(type) {
+            switch (type) {
+                case 'SPEED_BOOST':
+                    player.maxSpeed = 12;
+                    setTimeout(() => { player.maxSpeed = 8; }, POWERUP_TYPES.SPEED_BOOST.duration);
+                    break;
+                case 'SHIELD':
+                    // 护盾效果在碰撞检测中处理
+                    break;
+                case 'MAGNET':
+                    // 磁铁效果自动吸引道具
+                    break;
+                case 'STAR':
+                    // 无敌星效果在碰撞检测中处理
+                    break;
+            }
+        }
+        
+        // 清理屏幕外的对象
+        function cleanupObjects() {
+            // 清理道具
+            powerups.forEach((powerup, index) => {
+                if (powerup.x < distance - canvas.width) {
+                    powerups.splice(index, 1);
+                }
+            });
+            
+            // 清理障碍物
+            obstacles.forEach((obstacle, index) => {
+                if (obstacle.x < distance - canvas.width) {
+                    obstacles.splice(index, 1);
+                }
+            });
+        }
+        
+        // 更新UI显示
+        function updateUI() {
+            document.getElementById('distance').textContent = Math.floor(distance);
+            document.getElementById('speed').textContent = Math.floor(speed * 20);
+            document.getElementById('powerup-count').textContent = powerupsCollected;
+            
+            if (currentPowerup) {
+                document.getElementById('current-powerup').textContent = POWERUP_TYPES[currentPowerup.type].emoji;
+                document.getElementById('powerup-name').textContent = POWERUP_TYPES[currentPowerup.type].name;
+            } else {
+                document.getElementById('current-powerup').textContent = '🚀';
+                document.getElementById('powerup-name').textContent = '无道具';
+            }
+        }
+        
+        // 游戏结束
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('final-distance').textContent = Math.floor(distance);
+            document.getElementById('final-powerups').textContent = powerupsCollected;
+            document.getElementById('gameOver').style.display = 'block';
+        }
+        
+        // 重新开始游戏
+        function restartGame() {
+            gameRunning = true;
+            distance = 0;
+            speed = 0;
+            powerupsCollected = 0;
+            currentPowerup = null;
+            
+            player.x = canvas.width / 2;
+            player.y = canvas.height / 2;
+            player.speedX = 0;
+            player.speedY = 0;
+            
+            track.length = 0;
+            obstacles.length = 0;
+            powerups.length = 0;
+            buildings.length = 0;
+            clouds.length = 0;
+            
+            createInitialTrack();
+            createInitialBuildings();
+            createInitialClouds();
+            document.getElementById('gameOver').style.display = 'none';
+            
+            // 重新启动游戏循环
+            gameLoop();
+        }
+        
+        // 游戏主循环
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            drawBackground();
+            
+            // 绘制游戏元素
+            drawTrack();
+            drawBuildings();
+            drawClouds();
+            drawPowerups();
+            drawObstacles();
+            drawPlayer();
+            
+            // 更新游戏状态
+            update();
+            
+            // 管理音效
+            manageSounds();
+            
+            // 继续游戏循环
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // 管理音效
+        function manageSounds() {
+            if (!gameRunning) {
+                stopAllSounds();
+                return;
+            }
+            
+            const speedRatio = speed / player.maxSpeed;
+            
+            // 播放发动机音效
+            playEngineSound(speedRatio);
+            
+            // 管理加力燃烧器音效
+            if (player.afterburner) {
+                playAfterburnerSound();
+            } else {
+                stopAfterburnerSound();
+            }
+        }
+        
+        // 绘制背景
+        function drawBackground() {
+            // 渐变背景已经在CSS中设置，这里可以添加一些动态效果
+            // 例如：移动的星星或光点
+            for (let i = 0; i < 20; i++) {
+                const starX = (distance * 0.1 + i * 50) % canvas.width;
+                const starY = (i * 30) % canvas.height;
+                const size = Math.sin(Date.now() * 0.001 + i) * 2 + 2;
+                
+                ctx.fillStyle = `rgba(255, 255, 255, ${Math.sin(Date.now() * 0.002 + i) * 0.5 + 0.5})`;
+                ctx.beginPath();
+                ctx.arc(starX, starY, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // 键盘控制 - 改为垂直飞行方向
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning) return;
+            
+            switch (e.key) {
+                case 'ArrowUp':
+                    player.speedY = -player.acceleration * 2.0; // 向上飞行
+                    break;
+                case 'ArrowDown':
+                    player.speedY = player.acceleration * 2.0; // 向下飞行
+                    break;
+                case 'ArrowLeft':
+                    player.speedX = -player.acceleration * 0.8; // 向左微调
+                    break;
+                case 'ArrowRight':
+                    player.speedX = player.acceleration * 0.8; // 向右微调
+                    break;
+                case ' ':
+                    // 使用道具（如果有）
+                    if (currentPowerup) {
+                        // 这里可以添加道具使用效果
+                    }
+                    break;
+            }
+        });
+        
+        // 添加键盘释放事件处理 - 解决控制不流畅问题
+        document.addEventListener('keyup', (e) => {
+            if (!gameRunning) return;
+            
+            switch (e.key) {
+                case 'ArrowUp':
+                case 'ArrowDown':
+                    player.speedY *= 0.3; // 释放时快速减速
+                    break;
+                case 'ArrowLeft':
+                case 'ArrowRight':
+                    player.speedX *= 0.3; // 释放时快速减速
+                    break;
+            }
+        });
+        
+        // 触摸控制 - 改为垂直飞行方向
+        document.getElementById('up-btn').addEventListener('touchstart', () => {
+            player.speedY = -player.acceleration * 1.5; // 向上飞行
+        });
+        document.getElementById('down-btn').addEventListener('touchstart', () => {
+            player.speedY = player.acceleration * 1.5; // 向下飞行
+        });
+        document.getElementById('left-btn').addEventListener('touchstart', () => {
+            player.speedX = -player.acceleration * 0.5; // 向左微调
+        });
+        document.getElementById('right-btn').addEventListener('touchstart', () => {
+            player.speedX = player.acceleration * 0.5; // 向右微调
+        });
+        document.getElementById('powerup-btn').addEventListener('touchstart', () => {
+            if (currentPowerup) {
+                // 使用道具
+            }
+        });
+        
+        // 触摸结束事件
+        ['up-btn', 'down-btn', 'left-btn', 'right-btn'].forEach(id => {
+            document.getElementById(id).addEventListener('touchend', () => {
+                player.speedX *= 0.5;
+                player.speedY *= 0.5;
+            });
+        });
+        
+        // 窗口大小变化时调整画布大小
+        window.addEventListener('resize', () => {
+            canvas.width = Math.min(800, window.innerWidth - 40);
+            canvas.height = Math.min(600, window.innerHeight - 200);
+        });
+        
+        // 页面加载完成后开始游戏
+        window.addEventListener('load', () => {
+            // 调整画布大小
+            canvas.width = Math.min(800, window.innerWidth - 40);
+            canvas.height = Math.min(600, window.innerHeight - 200);
+            
+            // 开始游戏
+            initGame();
+        });
+    </script>
+</body>
+</html>

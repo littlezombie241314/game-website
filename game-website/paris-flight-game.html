@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>巴黎空中飞行 - SkyWings</title>
+    <meta name="description" content="驾驶飞行器在浪漫的巴黎上空飞行，探索埃菲尔铁塔、塞纳河等著名景点！">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <style>
+        /* 游戏页面专用样式 */
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, 
+                #87ceeb 0%, 
+                #98d8e8 25%, 
+                #a9e2e5 50%, 
+                #baece2 75%, 
+                #cbf6df 100%);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-canvas {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(135, 206, 235, 0.3);
+        }
+
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #2c5aa0;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            color: #2a2220;
+            display: none;
+            box-shadow: 0 0 30px rgba(135, 206, 235, 0.5);
+        }
+
+        .game-over h2 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .game-over p {
+            margin-bottom: 30px;
+            font-size: 18px;
+            color: #786460;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.6);
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(42, 34, 32, 0.8);
+            text-align: center;
+            font-size: 14px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .device-controls {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px solid rgba(74, 144, 226, 0.5);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+
+        .control-btn:active {
+            background: rgba(74, 144, 226, 0.3);
+            transform: scale(0.95);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .game-canvas {
+                width: 95vw !important;
+                height: 70vh !important;
+            }
+            
+            .game-ui {
+                font-size: 16px;
+                top: 10px;
+                left: 10px;
+            }
+            
+            .instructions {
+                font-size: 12px;
+                bottom: 10px;
+            }
+            
+            .device-controls {
+                bottom: 50px;
+            }
+            
+            .control-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-canvas {
+                width: 98vw !important;
+                height: 60vh !important;
+            }
+            
+            .game-over {
+                padding: 20px;
+                width: 90%;
+            }
+            
+            .game-over h2 {
+                font-size: 24px;
+            }
+            
+            .game-over p {
+                font-size: 16px;
+            }
+            
+            .device-controls {
+                gap: 15px;
+            }
+            
+            .control-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container nav">
+            <a class="brand" href="index.html" aria-label="返回首页">
+                <span class="brand-badge" aria-hidden="true"></span>
+                <span>SkyWings</span>
+            </a>
+            <nav class="nav-links" aria-label="主导航">
+                <a class="nav-link" href="index.html">首页</a>
+                <a class="nav-link" href="games.html">游戏</a>
+                <a class="nav-link" href="community.html">社区</a>
+                <a class="nav-link" href="support.html">支持</a>
+            </nav>
+            <div class="nav-actions">
+                <a class="btn" href="index.html">返回首页</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="game-container">
+        <div class="game-ui">
+            <div>得分: <span id="score">0</span></div>
+            <div>飞行距离: <span id="distance">0</span>米</div>
+            <div>收集景点: <span id="landmarks">0</span>/5</div>
+        </div>
+        
+        <canvas id="gameCanvas" class="game-canvas" width="800" height="600"></canvas>
+        
+        <div id="gameOver" class="game-over">
+            <h2>飞行结束！</h2>
+            <p>最终得分: <span id="finalScore">0</span></p>
+            <p>飞行距离: <span id="finalDistance">0</span>米</p>
+            <p>收集景点: <span id="finalLandmarks">0</span>/5</p>
+            <button class="restart-btn" onclick="restartGame()">重新飞行</button>
+        </div>
+        
+        <div class="device-controls">
+            <div class="control-btn" id="leftBtn">←</div>
+            <div class="control-btn" id="rightBtn">→</div>
+            <div class="control-btn" id="upBtn">↑</div>
+            <div class="control-btn" id="downBtn">↓</div>
+        </div>
+        
+        <div class="instructions">
+            <p>使用键盘方向键或点击屏幕按钮控制飞行器方向，收集巴黎著名景点！</p>
+        </div>
+    </main>
+
+    <script>
+        // 游戏变量
+        let canvas, ctx;
+        let aircraft = {
+            x: 400,
+            y: 500,
+            width: 40,
+            height: 30,
+            speed: 5,
+            altitude: 100 // 飞行高度
+        };
+        
+        let parisLandmarks = [];
+        let obstacles = [];
+        let score = 0;
+        let distance = 0;
+        let landmarksCollected = 0;
+        let gameRunning = true;
+        let keys = {};
+        let touchControls = {};
+        
+        // 巴黎著名景点数据
+        const landmarkData = [
+            { name: "埃菲尔铁塔", points: 100, color: "#ff6b6b" },
+            { name: "卢浮宫", points: 80, color: "#4ecdc4" },
+            { name: "凯旋门", points: 70, color: "#45b7d1" },
+            { name: "巴黎圣母院", points: 90, color: "#96ceb4" },
+            { name: "香榭丽舍大街", points: 60, color: "#feca57" }
+        ];
+
+        // 初始化游戏
+        function initGame() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 调整画布大小以适应屏幕
+            resizeCanvas();
+            
+            // 监听键盘事件
+            window.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+            });
+            
+            window.addEventListener('keyup', (e) => {
+                keys[e.key] = false;
+            });
+            
+            // 监听触摸控制事件
+            setupTouchControls();
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 开始游戏循环
+            gameLoop();
+            
+            // 生成巴黎景点
+            setInterval(() => {
+                if (gameRunning && parisLandmarks.length < 3) {
+                    createLandmark();
+                }
+            }, 2000);
+            
+            // 生成障碍物
+            setInterval(() => {
+                if (gameRunning && obstacles.length < 2) {
+                    createObstacle();
+                }
+            }, 1500);
+            
+            // 更新距离
+            setInterval(() => {
+                if (gameRunning) {
+                    distance += 10;
+                    document.getElementById('distance').textContent = distance;
+                }
+            }, 100);
+        }
+        
+        // 设置触摸控制
+        function setupTouchControls() {
+            const leftBtn = document.getElementById('leftBtn');
+            const rightBtn = document.getElementById('rightBtn');
+            const upBtn = document.getElementById('upBtn');
+            const downBtn = document.getElementById('downBtn');
+            
+            // 左按钮
+            leftBtn.addEventListener('touchstart', () => touchControls.left = true);
+            leftBtn.addEventListener('touchend', () => touchControls.left = false);
+            leftBtn.addEventListener('mousedown', () => touchControls.left = true);
+            leftBtn.addEventListener('mouseup', () => touchControls.left = false);
+            
+            // 右按钮
+            rightBtn.addEventListener('touchstart', () => touchControls.right = true);
+            rightBtn.addEventListener('touchend', () => touchControls.right = false);
+            rightBtn.addEventListener('mousedown', () => touchControls.right = true);
+            rightBtn.addEventListener('mouseup', () => touchControls.right = false);
+            
+            // 上按钮
+            upBtn.addEventListener('touchstart', () => touchControls.up = true);
+            upBtn.addEventListener('touchend', () => touchControls.up = false);
+            upBtn.addEventListener('mousedown', () => touchControls.up = true);
+            upBtn.addEventListener('mouseup', () => touchControls.up = false);
+            
+            // 下按钮
+            downBtn.addEventListener('touchstart', () => touchControls.down = true);
+            downBtn.addEventListener('touchend', () => touchControls.down = false);
+            downBtn.addEventListener('mousedown', () => touchControls.down = true);
+            downBtn.addEventListener('mouseup', () => touchControls.down = false);
+        }
+        
+        // 调整画布大小
+        function resizeCanvas() {
+            const maxWidth = window.innerWidth - 40;
+            const maxHeight = window.innerHeight - 200;
+            
+            const aspectRatio = 800 / 600;
+            let newWidth = maxWidth;
+            let newHeight = newWidth / aspectRatio;
+            
+            if (newHeight > maxHeight) {
+                newHeight = maxHeight;
+                newWidth = newHeight * aspectRatio;
+            }
+            
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            
+            // 调整飞行器位置
+            aircraft.x = newWidth / 2;
+            aircraft.y = newHeight - 50;
+        }
+        
+        // 创建巴黎景点
+        function createLandmark() {
+            const landmark = landmarkData[Math.floor(Math.random() * landmarkData.length)];
+            const size = Math.random() * 40 + 30;
+            
+            parisLandmarks.push({
+                x: Math.random() * (canvas.width - size),
+                y: -size,
+                width: size,
+                height: size,
+                name: landmark.name,
+                points: landmark.points,
+                color: landmark.color,
+                speed: Math.random() * 2 + 1
+            });
+        }
+        
+        // 创建障碍物
+        function createObstacle() {
+            const types = ['building', 'tree', 'cloud'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            const size = Math.random() * 50 + 30;
+            
+            obstacles.push({
+                x: Math.random() * (canvas.width - size),
+                y: -size,
+                width: size,
+                height: size,
+                type: type,
+                speed: Math.random() * 3 + 2
+            });
+        }
+        
+        // 更新游戏状态
+        function update() {
+            // 移动飞行器（键盘控制）
+            if ((keys['ArrowLeft'] || touchControls.left) && aircraft.x > 0) {
+                aircraft.x -= aircraft.speed;
+            }
+            if ((keys['ArrowRight'] || touchControls.right) && aircraft.x < canvas.width - aircraft.width) {
+                aircraft.x += aircraft.speed;
+            }
+            if ((keys['ArrowUp'] || touchControls.up) && aircraft.y > 50) {
+                aircraft.y -= aircraft.speed;
+                aircraft.altitude += 5;
+            }
+            if ((keys['ArrowDown'] || touchControls.down) && aircraft.y < canvas.height - 50) {
+                aircraft.y += aircraft.speed;
+                aircraft.altitude = Math.max(10, aircraft.altitude - 5);
+            }
+            
+            // 移动景点并检测收集
+            for (let i = parisLandmarks.length - 1; i >= 0; i--) {
+                const landmark = parisLandmarks[i];
+                landmark.y += landmark.speed;
+                
+                // 检测收集
+                if (checkCollision(aircraft, landmark)) {
+                    score += landmark.points;
+                    landmarksCollected++;
+                    document.getElementById('score').textContent = score;
+                    document.getElementById('landmarks').textContent = landmarksCollected;
+                    parisLandmarks.splice(i, 1);
+                    
+                    // 显示收集提示
+                    showCollectionMessage(landmark.name, landmark.points);
+                }
+                
+                // 移除超出屏幕的景点
+                if (landmark.y > canvas.height) {
+                    parisLandmarks.splice(i, 1);
+                }
+            }
+            
+            // 移动障碍物并检测碰撞
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obstacle = obstacles[i];
+                obstacle.y += obstacle.speed;
+                
+                // 检测碰撞
+                if (checkCollision(aircraft, obstacle)) {
+                    gameOver();
+                    return;
+                }
+                
+                // 移除超出屏幕的障碍物
+                if (obstacle.y > canvas.height) {
+                    obstacles.splice(i, 1);
+                }
+            }
+        }
+        
+        // 检测碰撞
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+        
+        // 显示收集提示
+        function showCollectionMessage(name, points) {
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: absolute;
+                top: ${aircraft.y}px;
+                left: ${aircraft.x}px;
+                color: white;
+                background: rgba(0,0,0,0.7);
+                padding: 5px 10px;
+                border-radius: 15px;
+                font-size: 14px;
+                z-index: 100;
+                animation: floatUp 2s forwards;
+            `;
+            message.textContent = `+${points} ${name}`;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes floatUp {
+                    0% { transform: translateY(0); opacity: 1; }
+                    100% { transform: translateY(-50px); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                if (message.parentNode) {
+                    message.parentNode.removeChild(message);
+                }
+            }, 2000);
+        }
+        
+        // 渲染游戏
+        function render() {
+            // 清空画布
+            ctx.fillStyle = 'rgba(135, 206, 235, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制巴黎背景
+            drawParisBackground();
+            
+            // 绘制飞行器
+            drawAircraft();
+            
+            // 绘制巴黎景点
+            drawLandmarks();
+            
+            // 绘制障碍物
+            drawObstacles();
+        }
+        
+        // 绘制巴黎背景
+        function drawParisBackground() {
+            // 绘制天空渐变
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGradient.addColorStop(0, '#87CEEB');
+            skyGradient.addColorStop(1, '#E0F7FA');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制远处的埃菲尔铁塔轮廓
+            ctx.fillStyle = 'rgba(100, 100, 100, 0.3)';
+            ctx.beginPath();
+            ctx.moveTo(canvas.width * 0.2, canvas.height * 0.7);
+            ctx.lineTo(canvas.width * 0.2, canvas.height * 0.3);
+            ctx.lineTo(canvas.width * 0.22, canvas.height * 0.3);
+            ctx.lineTo(canvas.width * 0.22, canvas.height * 0.7);
+            ctx.fill();
+            
+            // 绘制塞纳河
+            ctx.fillStyle = 'rgba(64, 164, 223, 0.4)';
+            ctx.fillRect(0, canvas.height * 0.8, canvas.width, canvas.height * 0.2);
+            
+            // 绘制云朵
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            for (let i = 0; i < 5; i++) {
+                const x = (Date.now() * 0.001 + i * 100) % (canvas.width + 200) - 100;
+                const y = 50 + i * 40;
+                const size = 30 + i * 5;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.arc(x + size * 0.8, y, size * 0.8, 0, Math.PI * 2);
+                ctx.arc(x - size * 0.8, y, size * 0.8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // 绘制飞行器 - 巴黎风格的浪漫飞行器
+        function drawAircraft() {
+            const centerX = aircraft.x + aircraft.width / 2;
+            const centerY = aircraft.y + aircraft.height / 2;
+            const angle = -10 * Math.PI / 180; // 轻微向上倾斜
+            
+            // 保存当前画布状态
+            ctx.save();
+            
+            // 平移和旋转画布
+            ctx.translate(centerX, centerY);
+            ctx.rotate(angle);
+            
+            // 创建机身渐变 - 浪漫的粉色系
+            const bodyGradient = ctx.createLinearGradient(0, -aircraft.height / 2, 0, aircraft.height / 2);
+            bodyGradient.addColorStop(0, '#ff9a9e'); // 浅粉色顶部
+            bodyGradient.addColorStop(0.5, '#fad0c4'); // 肉粉色中部
+            bodyGradient.addColorStop(1, '#fad0c4'); // 肉粉色底部
+            
+            // 绘制机身主体
+            ctx.fillStyle = bodyGradient;
+            ctx.beginPath();
+            ctx.moveTo(0, -aircraft.height / 2);
+            ctx.lineTo(-aircraft.width / 3, aircraft.height / 4);
+            ctx.lineTo(aircraft.width / 3, aircraft.height / 4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制机翼 - 优雅的白色
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath();
+            ctx.moveTo(-aircraft.width / 2, 0);
+            ctx.lineTo(-aircraft.width / 3, -aircraft.height / 6);
+            ctx.lineTo(-aircraft.width / 3, aircraft.height / 6);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(aircraft.width / 2, 0);
+            ctx.lineTo(aircraft.width / 3, -aircraft.height / 6);
+            ctx.lineTo(aircraft.width / 3, aircraft.height / 6);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制驾驶舱 - 蓝色玻璃效果
+            const cockpitGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, aircraft.width / 8);
+            cockpitGradient.addColorStop(0, '#a8e6cf'); // 浅绿色
+            cockpitGradient.addColorStop(1, '#88d3ce'); // 青色
+            
+            ctx.fillStyle = cockpitGradient;
+            ctx.beginPath();
+            ctx.arc(0, -aircraft.height / 6, aircraft.width / 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 添加浪漫的心形装饰
+            ctx.fillStyle = '#ff6b6b';
+            ctx.beginPath();
+            ctx.moveTo(0, -aircraft.height / 3);
+            ctx.bezierCurveTo(
+                aircraft.width / 4, -aircraft.height / 2,
+                aircraft.width / 4, -aircraft.height / 6,
+                0, -aircraft.height / 6
+            );
+            ctx.bezierCurveTo(
+                -aircraft.width / 4, -aircraft.height / 6,
+                -aircraft.width / 4, -aircraft.height / 2,
+                0, -aircraft.height / 3
+            );
+            ctx.fill();
+            
+            // 恢复画布状态
+            ctx.restore();
+        }
+        
+        // 绘制巴黎景点
+        function drawLandmarks() {
+            parisLandmarks.forEach(landmark => {
+                ctx.save();
+                
+                // 根据景点名称绘制不同的建筑形状
+                switch (landmark.name) {
+                    case '埃菲尔铁塔':
+                        drawEiffelTower(landmark);
+                        break;
+                    case '卢浮宫':
+                        drawLouvre(landmark);
+                        break;
+                    case '凯旋门':
+                        drawArcDeTriomphe(landmark);
+                        break;
+                    case '巴黎圣母院':
+                        drawNotreDame(landmark);
+                        break;
+                    case '香榭丽舍大街':
+                        drawChampsElysees(landmark);
+                        break;
+                    default:
+                        drawGenericLandmark(landmark);
+                }
+                
+                // 绘制景点名称
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 11px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillText(landmark.name, landmark.x + landmark.width/2, landmark.y + landmark.height + 5);
+                
+                ctx.restore();
+            });
+        }
+        
+        // 绘制埃菲尔铁塔
+        function drawEiffelTower(landmark) {
+            const centerX = landmark.x + landmark.width/2;
+            const baseY = landmark.y + landmark.height;
+            
+            // 铁塔主体颜色
+            ctx.fillStyle = '#4A4A4A';
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 2;
+            
+            // 铁塔基座
+            ctx.fillRect(centerX - 15, baseY - 10, 30, 10);
+            
+            // 铁塔支柱
+            ctx.beginPath();
+            ctx.moveTo(centerX - 12, baseY - 10);
+            ctx.lineTo(centerX - 8, baseY - 50);
+            ctx.lineTo(centerX - 4, baseY - 10);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX + 12, baseY - 10);
+            ctx.lineTo(centerX + 8, baseY - 50);
+            ctx.lineTo(centerX + 4, baseY - 10);
+            ctx.fill();
+            
+            // 铁塔中层平台
+            ctx.fillRect(centerX - 10, baseY - 40, 20, 5);
+            
+            // 铁塔上层结构
+            ctx.beginPath();
+            ctx.moveTo(centerX - 6, baseY - 40);
+            ctx.lineTo(centerX - 2, baseY - 70);
+            ctx.lineTo(centerX + 2, baseY - 40);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX + 6, baseY - 40);
+            ctx.lineTo(centerX + 2, baseY - 70);
+            ctx.lineTo(centerX - 2, baseY - 40);
+            ctx.fill();
+            
+            // 铁塔顶部
+            ctx.fillRect(centerX - 3, baseY - 70, 6, 15);
+            
+            // 添加灯光效果
+            ctx.fillStyle = '#FFD700';
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, baseY - 20 - i * 15, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // 绘制卢浮宫
+        function drawLouvre(landmark) {
+            const centerX = landmark.x + landmark.width/2;
+            const baseY = landmark.y + landmark.height;
+            
+            // 卢浮宫主体颜色
+            ctx.fillStyle = '#D4AF37';
+            ctx.strokeStyle = '#B8860B';
+            ctx.lineWidth = 2;
+            
+            // 主建筑体
+            ctx.fillRect(centerX - 25, baseY - 40, 50, 40);
+            
+            // 金字塔（简化版）
+            ctx.fillStyle = 'rgba(200, 220, 255, 0.7)';
+            ctx.beginPath();
+            ctx.moveTo(centerX, baseY - 40);
+            ctx.lineTo(centerX - 15, baseY - 20);
+            ctx.lineTo(centerX + 15, baseY - 20);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 建筑细节 - 窗户
+            ctx.fillStyle = '#87CEEB';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 2; j++) {
+                    ctx.fillRect(centerX - 20 + i * 15, baseY - 35 + j * 15, 8, 8);
+                }
+            }
+            
+            // 建筑轮廓
+            ctx.strokeRect(centerX - 25, baseY - 40, 50, 40);
+        }
+        
+        // 绘制凯旋门
+        function drawArcDeTriomphe(landmark) {
+            const centerX = landmark.x + landmark.width/2;
+            const baseY = landmark.y + landmark.height;
+            
+            // 凯旋门颜色
+            ctx.fillStyle = '#8B7355';
+            ctx.strokeStyle = '#696969';
+            ctx.lineWidth = 2;
+            
+            // 凯旋门基座
+            ctx.fillRect(centerX - 20, baseY - 50, 40, 50);
+            
+            // 中央拱门
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(centerX - 8, baseY - 40, 16, 30);
+            
+            // 侧拱门
+            ctx.fillRect(centerX - 18, baseY - 30, 6, 20);
+            ctx.fillRect(centerX + 12, baseY - 30, 6, 20);
+            
+            // 顶部结构
+            ctx.fillStyle = '#8B7355';
+            ctx.fillRect(centerX - 22, baseY - 55, 44, 5);
+            
+            // 建筑细节
+            ctx.strokeRect(centerX - 20, baseY - 50, 40, 50);
+        }
+        
+        // 绘制巴黎圣母院
+        function drawNotreDame(landmark) {
+            const centerX = landmark.x + landmark.width/2;
+            const baseY = landmark.y + landmark.height;
+            
+            // 教堂主体颜色
+            ctx.fillStyle = '#708090';
+            ctx.strokeStyle = '#2F4F4F';
+            ctx.lineWidth = 2;
+            
+            // 教堂主体
+            ctx.fillRect(centerX - 20, baseY - 45, 40, 45);
+            
+            // 钟楼
+            ctx.fillRect(centerX - 18, baseY - 60, 8, 15);
+            ctx.fillRect(centerX + 10, baseY - 60, 8, 15);
+            
+            // 中央玫瑰窗
+            ctx.fillStyle = '#FF6B6B';
+            ctx.beginPath();
+            ctx.arc(centerX, baseY - 25, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 门廊
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(centerX - 6, baseY - 20, 12, 20);
+            
+            // 尖顶（简化）
+            ctx.fillStyle = '#708090';
+            ctx.beginPath();
+            ctx.moveTo(centerX, baseY - 60);
+            ctx.lineTo(centerX - 5, baseY - 70);
+            ctx.lineTo(centerX + 5, baseY - 70);
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        // 绘制香榭丽舍大街
+        function drawChampsElysees(landmark) {
+            const centerX = landmark.x + landmark.width/2;
+            const baseY = landmark.y + landmark.height;
+            
+            // 街道和建筑
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(centerX - 25, baseY - 5, 50, 5);
+            
+            // 两侧树木
+            ctx.fillStyle = '#228B22';
+            for (let i = -1; i <= 1; i += 2) {
+                ctx.beginPath();
+                ctx.arc(centerX + i * 15, baseY - 15, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 树干
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(centerX + i * 15 - 2, baseY - 5, 4, 10);
+                ctx.fillStyle = '#228B22';
+            }
+            
+            // 路灯
+            ctx.fillStyle = '#DAA520';
+            for (let i = -1; i <= 1; i += 2) {
+                // 灯柱
+                ctx.fillRect(centerX + i * 20 - 1, baseY - 25, 2, 20);
+                // 灯头
+                ctx.beginPath();
+                ctx.arc(centerX + i * 20, baseY - 25, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // 绘制通用地标
+        function drawGenericLandmark(landmark) {
+            const centerX = landmark.x + landmark.width/2;
+            const baseY = landmark.y + landmark.height;
+            
+            // 欧式建筑风格
+            ctx.fillStyle = landmark.color;
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 2;
+            
+            // 建筑主体
+            ctx.fillRect(centerX - 15, baseY - 30, 30, 30);
+            
+            // 屋顶
+            ctx.fillStyle = '#8B0000';
+            ctx.beginPath();
+            ctx.moveTo(centerX - 18, baseY - 30);
+            ctx.lineTo(centerX, baseY - 40);
+            ctx.lineTo(centerX + 18, baseY - 30);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 窗户
+            ctx.fillStyle = '#87CEEB';
+            for (let i = 0; i < 2; i++) {
+                for (let j = 0; j < 2; j++) {
+                    ctx.fillRect(centerX - 10 + i * 12, baseY - 25 + j * 10, 6, 6);
+                }
+            }
+            
+            // 门
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(centerX - 3, baseY - 10, 6, 10);
+            
+            // 建筑轮廓
+            ctx.strokeRect(centerX - 15, baseY - 30, 30, 30);
+        }
+        
+        // 绘制障碍物
+        function drawObstacles() {
+            obstacles.forEach(obstacle => {
+                switch (obstacle.type) {
+                    case 'building':
+                        ctx.fillStyle = '#95a5a6';
+                        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                        // 添加窗户
+                        ctx.fillStyle = '#f1c40f';
+                        for (let i = 0; i < 3; i++) {
+                            for (let j = 0; j < 2; j++) {
+                                ctx.fillRect(
+                                    obstacle.x + 5 + i * (obstacle.width - 10) / 3,
+                                    obstacle.y + 5 + j * (obstacle.height - 10) / 2,
+                                    8, 8
+                                );
+                            }
+                        }
+                        break;
+                    case 'tree':
+                        ctx.fillStyle = '#27ae60';
+                        ctx.beginPath();
+                        ctx.arc(obstacle.x + obstacle.width/2, obstacle.y + obstacle.height/2, obstacle.width/2, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                    case 'cloud':
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                        ctx.beginPath();
+                        ctx.arc(obstacle.x + obstacle.width/2, obstacle.y + obstacle.height/2, obstacle.width/2, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                }
+            });
+        }
+        
+        // 游戏结束
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalDistance').textContent = distance;
+            document.getElementById('finalLandmarks').textContent = landmarksCollected;
+            document.getElementById('gameOver').style.display = 'block';
+            
+            // 保存分数到本地存储
+            saveScore(score, distance, landmarksCollected);
+        }
+        
+        // 保存分数到本地存储
+        function saveScore(finalScore, finalDistance, finalLandmarks) {
+            const playerName = '游客' + Math.floor(Math.random() * 1000);
+            const date = new Date().toISOString().split('T')[0];
+            
+            const scoreRecord = {
+                name: playerName,
+                score: finalScore,
+                distance: finalDistance,
+                landmarks: finalLandmarks,
+                date: date,
+                timestamp: Date.now(),
+                game: 'paris-flight'
+            };
+            
+            // 保存到本地存储
+            let localScores = JSON.parse(localStorage.getItem('parisFlightScores') || '[]');
+            localScores.push(scoreRecord);
+            if (localScores.length > 10) {
+                localScores = localScores.slice(-10);
+            }
+            localStorage.setItem('parisFlightScores', JSON.stringify(localScores));
+        }
+        
+        // 重新开始游戏
+        function restartGame() {
+            parisLandmarks = [];
+            obstacles = [];
+            score = 0;
+            distance = 0;
+            landmarksCollected = 0;
+            gameRunning = true;
+            
+            document.getElementById('score').textContent = '0';
+            document.getElementById('distance').textContent = '0';
+            document.getElementById('landmarks').textContent = '0';
+            document.getElementById('gameOver').style.display = 'none';
+            
+            // 重置飞行器位置
+            aircraft.x = canvas.width / 2;
+            aircraft.y = canvas.height - 50;
+            aircraft.altitude = 100;
+        }
+        
+        // 游戏主循环
+        function gameLoop() {
+            if (gameRunning) {
+                update();
+                render();
+            }
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // 页面加载完成后初始化游戏
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1047 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>马尔代夫空中飞行 - SkyWings</title>
+    <meta name="description" content="在马尔代夫美丽的海岛上空驾驶飞行器，探索海岛天堂！">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <style>
+        /* 马尔代夫主题游戏页面专用样式 */
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(180deg, 
+                #87CEEB 0%, 
+                #00B4DB 25%, 
+                #0083B0 50%, 
+                #005F8A 75%, 
+                #003F5C 100%);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-canvas {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0, 180, 219, 0.3);
+        }
+
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 180, 219, 0.8);
+            background: rgba(0, 131, 176, 0.6);
+            padding: 10px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 63, 92, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            color: #ffffff;
+            display: none;
+            box-shadow: 0 0 30px rgba(0, 180, 219, 0.5);
+            border: 2px solid rgba(0, 180, 219, 0.5);
+        }
+
+        .game-over h2 {
+            color: #00B4DB;
+            margin-bottom: 20px;
+            font-size: 32px;
+            text-shadow: 0 0 10px rgba(0, 180, 219, 0.8);
+        }
+
+        .game-over p {
+            margin-bottom: 30px;
+            font-size: 18px;
+            color: #87CEEB;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #00B4DB, #0083B0);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 180, 219, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 180, 219, 0.6);
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            font-size: 14px;
+            text-shadow: 0 0 5px rgba(0, 180, 219, 0.8);
+            background: rgba(0, 131, 176, 0.6);
+            padding: 10px 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 触摸控制按钮 */
+        .touch-controls {
+            position: absolute;
+            bottom: 100px;
+            width: 100%;
+            display: none;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 180, 219, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:active {
+            background: rgba(0, 131, 176, 0.9);
+            transform: scale(0.95);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .game-canvas {
+                width: 95vw !important;
+                height: 70vh !important;
+            }
+            
+            .game-ui {
+                font-size: 16px;
+                top: 10px;
+                left: 10px;
+            }
+            
+            .instructions {
+                font-size: 12px;
+                bottom: 10px;
+            }
+            
+            .touch-controls {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-canvas {
+                width: 98vw !important;
+                height: 60vh !important;
+            }
+            
+            .game-over {
+                padding: 20px;
+                width: 90%;
+            }
+            
+            .game-over h2 {
+                font-size: 24px;
+            }
+            
+            .game-over p {
+                font-size: 16px;
+            }
+            
+            .control-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container nav">
+            <a class="brand" href="index.html" aria-label="返回首页">
+                <span class="brand-badge" aria-hidden="true"></span>
+                <span>SkyWings</span>
+            </a>
+            <nav class="nav-links" aria-label="主导航">
+                <a class="nav-link" href="index.html">首页</a>
+                <a class="nav-link" href="games.html">游戏</a>
+                <a class="nav-link" href="community.html">社区</a>
+                <a class="nav-link" href="support.html">支持</a>
+            </nav>
+            <div class="nav-actions">
+                <a class="btn" href="index.html">返回首页</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="game-container">
+        <div class="game-ui">
+            <div>得分: <span id="score">0</span></div>
+            <div>飞行距离: <span id="distance">0</span>米</div>
+            <div>收集岛屿: <span id="islands">0</span>/5</div>
+        </div>
+        
+        <canvas id="gameCanvas" class="game-canvas" width="800" height="600"></canvas>
+        
+        <div id="gameOver" class="game-over">
+            <h2>游戏结束！</h2>
+            <p>最终得分: <span id="finalScore">0</span></p>
+            <p>飞行距离: <span id="finalDistance">0</span>米</p>
+            <p>收集岛屿: <span id="finalIslands">0</span>/5</p>
+            <button class="restart-btn" onclick="restartGame()">重新开始</button>
+        </div>
+        
+        <div class="instructions">
+            <p>使用键盘方向键 ← → ↑ ↓ 控制飞行器，收集马尔代夫美丽岛屿！</p>
+        </div>
+        
+        <!-- 触摸控制按钮 -->
+        <div class="touch-controls">
+            <div class="control-btn" id="leftBtn">←</div>
+            <div class="control-btn" id="upBtn">↑</div>
+            <div class="control-btn" id="downBtn">↓</div>
+            <div class="control-btn" id="rightBtn">→</div>
+        </div>
+    </main>
+
+    <script>
+        // 游戏变量
+        let canvas, ctx;
+        let spaceship = {
+            x: 400,
+            y: 300,  // 降低初始高度，让飞行器飞得更低
+            width: 40,
+            height: 30,
+            speed: 5,
+            velocityX: 0,
+            velocityY: 0
+        };
+        
+        let islands = [];
+        let obstacles = [];
+        let clouds = [];
+        let score = 0;
+        let distance = 0;
+        let islandsCollected = 0;
+        let gameRunning = true;
+        let keys = {};
+        let touchControls = {};
+        
+        // 马尔代夫岛屿数据
+        const islandData = [
+            { name: "马累岛", points: 100, color: "#ff6b6b" },
+            { name: "芙花芬岛", points: 80, color: "#4ecdc4" },
+            { name: "维拉沙鲁岛", points: 90, color: "#ffd166" },
+            { name: "康杜玛岛", points: 70, color: "#06d6a0" },
+            { name: "班度士岛", points: 85, color: "#118ab2" }
+        ];
+
+        // 初始化游戏
+        function initGame() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 调整画布大小以适应屏幕
+            resizeCanvas();
+            
+            // 监听键盘事件
+            window.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+            });
+            
+            window.addEventListener('keyup', (e) => {
+                keys[e.key] = false;
+            });
+            
+            // 监听触摸控制
+            setupTouchControls();
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 开始游戏循环
+            gameLoop();
+            
+            // 生成岛屿
+            setInterval(() => {
+                if (gameRunning && islands.length < 3) {
+                    createIsland();
+                }
+            }, 3000);
+            
+            // 生成障碍物
+            setInterval(() => {
+                if (gameRunning) {
+                    createObstacle();
+                }
+            }, 2000);
+            
+            // 生成云朵
+            setInterval(() => {
+                if (gameRunning && clouds.length < 5) {
+                    createCloud();
+                }
+            }, 1500);
+        }
+        
+        // 设置触摸控制
+        function setupTouchControls() {
+            const leftBtn = document.getElementById('leftBtn');
+            const rightBtn = document.getElementById('rightBtn');
+            const upBtn = document.getElementById('upBtn');
+            const downBtn = document.getElementById('downBtn');
+            
+            // 左按钮
+            leftBtn.addEventListener('touchstart', () => touchControls.left = true);
+            leftBtn.addEventListener('touchend', () => touchControls.left = false);
+            
+            // 右按钮
+            rightBtn.addEventListener('touchstart', () => touchControls.right = true);
+            rightBtn.addEventListener('touchend', () => touchControls.right = false);
+            
+            // 上按钮
+            upBtn.addEventListener('touchstart', () => touchControls.up = true);
+            upBtn.addEventListener('touchend', () => touchControls.up = false);
+            
+            // 下按钮
+            downBtn.addEventListener('touchstart', () => touchControls.down = true);
+            downBtn.addEventListener('touchend', () => touchControls.down = false);
+        }
+        
+        // 调整画布大小
+        function resizeCanvas() {
+            const maxWidth = window.innerWidth - 40;
+            const maxHeight = window.innerHeight - 200;
+            
+            const aspectRatio = 800 / 600;
+            let newWidth = maxWidth;
+            let newHeight = newWidth / aspectRatio;
+            
+            if (newHeight > maxHeight) {
+                newHeight = maxHeight;
+                newWidth = newHeight * aspectRatio;
+            }
+            
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            
+            // 调整飞行器位置
+            spaceship.x = newWidth / 2;
+            spaceship.y = newHeight - 150;  // 降低飞行器位置，让飞行器飞得更低
+        }
+        
+        // 创建马尔代夫岛屿
+        function createIsland() {
+            const islandType = islandData[Math.floor(Math.random() * islandData.length)];
+            const size = Math.random() * 60 + 40; // 增大岛屿尺寸，让景色更清晰
+            
+            islands.push({
+                x: Math.random() * (canvas.width - size),
+                y: canvas.height * 0.4 - size, // 调整生成高度，让岛屿更接近飞行器
+                width: size,
+                height: size,
+                speed: Math.random() * 1.5 + 0.5, // 减慢移动速度，让玩家有更多时间欣赏
+                name: islandType.name,
+                points: islandType.points,
+                color: islandType.color,
+                details: Math.random() > 0.5 ? 'palm' : 'villa' // 添加岛屿细节类型
+            });
+        }
+        
+        // 创建障碍物（建筑物、树木等）
+        function createObstacle() {
+            const types = ['building', 'tree', 'cloud'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            
+            obstacles.push({
+                x: Math.random() * (canvas.width - 50),
+                y: canvas.height * 0.4 - 50, // 降低生成高度，让障碍物出现在更低的空中
+                width: 30 + Math.random() * 20,
+                height: 40 + Math.random() * 30,
+                speed: Math.random() * 3 + 1,
+                type: type
+            });
+        }
+        
+        // 创建云朵
+        function createCloud() {
+            clouds.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height / 2,
+                width: 60 + Math.random() * 40,
+                height: 30 + Math.random() * 20,
+                speed: Math.random() * 1 + 0.5
+            });
+        }
+        
+        // 更新游戏状态
+        function update() {
+            // 更新飞行距离
+            distance += 0.1;
+            document.getElementById('distance').textContent = Math.floor(distance);
+            
+            // 移动飞行器（键盘控制）
+            if (keys['ArrowLeft'] || touchControls.left) {
+                spaceship.velocityX = -spaceship.speed;
+            } else if (keys['ArrowRight'] || touchControls.right) {
+                spaceship.velocityX = spaceship.speed;
+            } else {
+                spaceship.velocityX *= 0.9; // 平滑减速
+            }
+            
+            if (keys['ArrowUp'] || touchControls.up) {
+                spaceship.velocityY = -spaceship.speed;
+            } else if (keys['ArrowDown'] || touchControls.down) {
+                spaceship.velocityY = spaceship.speed;
+            } else {
+                spaceship.velocityY *= 0.9; // 平滑减速
+            }
+            
+            // 应用速度
+            spaceship.x += spaceship.velocityX;
+            spaceship.y += spaceship.velocityY;
+            
+            // 边界检查 - 进一步降低飞行器最低高度，让玩家能更近距离欣赏岛屿
+            spaceship.x = Math.max(0, Math.min(canvas.width - spaceship.width, spaceship.x));
+            spaceship.y = Math.max(canvas.height * 0.7, Math.min(canvas.height - spaceship.height, spaceship.y)); // 进一步降低飞行高度，更接近海面
+            
+            // 移动岛屿并检测收集
+            for (let i = islands.length - 1; i >= 0; i--) {
+                const island = islands[i];
+                island.y += island.speed;
+                
+                // 检测收集
+                if (checkCollision(spaceship, island)) {
+                    score += island.points;
+                    islandsCollected++;
+                    document.getElementById('score').textContent = score;
+                    document.getElementById('islands').textContent = islandsCollected;
+                    
+                    // 显示收集提示
+                    showCollectionMessage(`+${island.points} ${island.name}`);
+                    
+                    islands.splice(i, 1);
+                    continue;
+                }
+                
+                // 移除超出屏幕的岛屿
+                if (island.y > canvas.height) {
+                    islands.splice(i, 1);
+                }
+            }
+            
+            // 移动障碍物并检测碰撞
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obstacle = obstacles[i];
+                obstacle.y += obstacle.speed;
+                
+                // 检测碰撞
+                if (checkCollision(spaceship, obstacle)) {
+                    gameOver();
+                    return;
+                }
+                
+                // 移除超出屏幕的障碍物
+                if (obstacle.y > canvas.height) {
+                    obstacles.splice(i, 1);
+                }
+            }
+            
+            // 移动云朵
+            for (let i = clouds.length - 1; i >= 0; i--) {
+                const cloud = clouds[i];
+                cloud.x += cloud.speed;
+                
+                // 移除超出屏幕的云朵
+                if (cloud.x > canvas.width + cloud.width) {
+                    clouds.splice(i, 1);
+                }
+            }
+        }
+        
+        // 检测碰撞
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+        
+        // 显示收集提示
+        function showCollectionMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message;
+            messageDiv.style.cssText = `
+                position: absolute;
+                top: ${spaceship.y}px;
+                left: ${spaceship.x}px;
+                color: #00B4DB;
+                font-size: 16px;
+                font-weight: bold;
+                text-shadow: 0 0 5px white;
+                animation: floatUp 1s ease-out forwards;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes floatUp {
+                    0% { transform: translateY(0); opacity: 1; }
+                    100% { transform: translateY(-50px); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                document.body.removeChild(messageDiv);
+                document.head.removeChild(style);
+            }, 1000);
+        }
+        
+        // 渲染游戏
+        function render() {
+            // 清空画布
+            ctx.fillStyle = 'rgba(0, 63, 92, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制海洋背景
+            drawOceanBackground();
+            
+            // 绘制云朵
+            drawClouds();
+            
+            // 绘制岛屿
+            drawIslands();
+            
+            // 绘制障碍物
+            drawObstacles();
+            
+            // 绘制飞行器
+            drawSpaceship();
+        }
+        
+        // 绘制海洋背景
+        function drawOceanBackground() {
+            // 绘制远处的海岛轮廓 - 更清晰可见
+            ctx.fillStyle = 'rgba(0, 95, 138, 0.5)';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - 80);
+            ctx.bezierCurveTo(100, canvas.height - 120, 200, canvas.height - 100, 300, canvas.height - 80);
+            ctx.bezierCurveTo(400, canvas.height - 60, 500, canvas.height - 100, canvas.width, canvas.height - 90);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制近处的浅海区域
+            ctx.fillStyle = 'rgba(0, 180, 219, 0.4)';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - 50);
+            ctx.bezierCurveTo(150, canvas.height - 70, 350, canvas.height - 60, canvas.width, canvas.height - 55);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制波浪效果 - 更明显的波浪
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 3;
+            for (let i = 0; i < canvas.width; i += 25) {
+                ctx.beginPath();
+                ctx.moveTo(i, canvas.height - 30 + Math.sin(i * 0.1 + Date.now() * 0.002) * 8);
+                ctx.lineTo(i + 20, canvas.height - 30 + Math.sin((i + 20) * 0.1 + Date.now() * 0.002) * 8);
+                ctx.stroke();
+            }
+            
+            // 绘制阳光反射效果
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.beginPath();
+            ctx.ellipse(canvas.width * 0.7, canvas.height * 0.8, 100, 30, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // 绘制云朵
+        function drawClouds() {
+            clouds.forEach(cloud => {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.beginPath();
+                ctx.arc(cloud.x, cloud.y, cloud.width / 3, 0, Math.PI * 2);
+                ctx.arc(cloud.x + cloud.width / 3, cloud.y - cloud.height / 4, cloud.width / 4, 0, Math.PI * 2);
+                ctx.arc(cloud.x - cloud.width / 3, cloud.y - cloud.height / 4, cloud.width / 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+        
+        // 绘制马尔代夫岛屿
+        function drawIslands() {
+            islands.forEach(island => {
+                // 保存当前画布状态
+                ctx.save();
+                
+                const centerX = island.x + island.width/2;
+                const centerY = island.y + island.height/2;
+                const radius = island.width/2;
+                
+                // 岛屿主体 - 使用更自然的椭圆形和贝塞尔曲线
+                ctx.fillStyle = island.color;
+                ctx.beginPath();
+                
+                // 创建椭圆形岛屿主体，更接近真实岛屿形状
+                const islandWidth = island.width;
+                const islandHeight = island.height * 0.8; // 稍微扁平
+                
+                // 使用贝塞尔曲线创建自然的不规则边缘
+                ctx.moveTo(island.x, centerY);
+                
+                // 左侧曲线
+                ctx.bezierCurveTo(
+                    island.x - islandWidth * 0.1, centerY - islandHeight * 0.3,
+                    island.x + islandWidth * 0.2, centerY - islandHeight * 0.4,
+                    centerX, centerY - islandHeight * 0.5
+                );
+                
+                // 顶部曲线
+                ctx.bezierCurveTo(
+                    island.x + islandWidth * 0.8, centerY - islandHeight * 0.4,
+                    island.x + islandWidth * 1.1, centerY - islandHeight * 0.3,
+                    island.x + islandWidth, centerY
+                );
+                
+                // 右侧曲线
+                ctx.bezierCurveTo(
+                    island.x + islandWidth * 1.1, centerY + islandHeight * 0.3,
+                    island.x + islandWidth * 0.8, centerY + islandHeight * 0.4,
+                    centerX, centerY + islandHeight * 0.5
+                );
+                
+                // 底部曲线
+                ctx.bezierCurveTo(
+                    island.x + islandWidth * 0.2, centerY + islandHeight * 0.4,
+                    island.x - islandWidth * 0.1, centerY + islandHeight * 0.3,
+                    island.x, centerY
+                );
+                
+                ctx.closePath();
+                ctx.fill();
+                
+                // 岛屿细节（沙滩）- 使用更自然的沙滩形状
+                ctx.fillStyle = '#f8f3d4';
+                ctx.beginPath();
+                
+                // 创建沙滩区域
+                const beachY = centerY + islandHeight * 0.2;
+                ctx.moveTo(island.x, beachY);
+                
+                // 沙滩波浪线
+                for (let x = island.x; x <= island.x + islandWidth; x += 4) {
+                    const waveOffset = Math.sin((x - island.x) * 0.2) * 3; // 更自然的波浪
+                    ctx.lineTo(x, beachY + waveOffset);
+                }
+                
+                ctx.lineTo(island.x + islandWidth, centerY + islandHeight * 0.5);
+                ctx.lineTo(island.x, centerY + islandHeight * 0.5);
+                ctx.closePath();
+                ctx.fill();
+                
+                // 岛屿内部细节 - 添加一些植被纹理
+                ctx.fillStyle = '#90EE90';
+                for (let i = 0; i < 5; i++) {
+                    const bushX = island.x + Math.random() * islandWidth * 0.8 + islandWidth * 0.1;
+                    const bushY = centerY - Math.random() * islandHeight * 0.3;
+                    const bushSize = islandWidth * 0.1;
+                    
+                    ctx.beginPath();
+                    ctx.arc(bushX, bushY, bushSize, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // 岛屿特色细节
+                if (island.details === 'palm') {
+                    // 绘制更真实的棕榈树
+                    const treeX = centerX;
+                    const treeY = centerY - islandHeight * 0.2;
+                    
+                    // 树干
+                    ctx.fillStyle = '#8B4513';
+                    ctx.fillRect(treeX - 2, treeY, 4, islandHeight * 0.4);
+                    
+                    // 树冠
+                    ctx.fillStyle = '#228B22';
+                    ctx.beginPath();
+                    ctx.arc(treeX, treeY, islandWidth * 0.15, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 棕榈叶
+                    ctx.fillStyle = '#32CD32';
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (i / 6) * Math.PI * 2;
+                        ctx.beginPath();
+                        ctx.moveTo(treeX, treeY);
+                        ctx.lineTo(treeX + Math.cos(angle) * islandWidth * 0.2, 
+                                  treeY + Math.sin(angle) * islandWidth * 0.2);
+                        ctx.lineTo(treeX + Math.cos(angle + Math.PI/6) * islandWidth * 0.1, 
+                                  treeY + Math.sin(angle + Math.PI/6) * islandWidth * 0.1);
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                } else {
+                    // 绘制更真实的水上别墅
+                    const villaX = centerX - islandWidth * 0.15;
+                    const villaY = centerY - islandHeight * 0.1;
+                    const villaWidth = islandWidth * 0.3;
+                    const villaHeight = islandHeight * 0.25;
+                    
+                    // 别墅主体
+                    ctx.fillStyle = '#FFE4B5';
+                    ctx.fillRect(villaX, villaY, villaWidth, villaHeight);
+                    
+                    // 别墅屋顶
+                    ctx.fillStyle = '#CD853F';
+                    ctx.beginPath();
+                    ctx.moveTo(villaX, villaY);
+                    ctx.lineTo(villaX + villaWidth/2, villaY - villaHeight * 0.3);
+                    ctx.lineTo(villaX + villaWidth, villaY);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // 窗户
+                    ctx.fillStyle = '#87CEEB';
+                    ctx.fillRect(villaX + 4, villaY + 4, 5, 5);
+                    ctx.fillRect(villaX + villaWidth - 9, villaY + 4, 5, 5);
+                    ctx.fillRect(villaX + 4, villaY + villaHeight - 9, 5, 5);
+                    ctx.fillRect(villaX + villaWidth - 9, villaY + villaHeight - 9, 5, 5);
+                }
+                
+                // 岛屿名称
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 11px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(island.name, centerX, centerY);
+                
+                // 岛屿发光效果 - 使用更自然的发光
+                ctx.shadowColor = island.color;
+                ctx.shadowBlur = 12;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                
+                // 岛屿周围的光晕效果
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // 恢复画布状态
+                ctx.restore();
+            });
+        }
+        
+        // 绘制障碍物
+        function drawObstacles() {
+            obstacles.forEach(obstacle => {
+                if (obstacle.type === 'building') {
+                    // 绘制建筑物
+                    ctx.fillStyle = '#8B4513';
+                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                    
+                    // 窗户
+                    ctx.fillStyle = '#87CEEB';
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 2; j++) {
+                            ctx.fillRect(obstacle.x + 5 + i * 8, obstacle.y + 5 + j * 12, 5, 8);
+                        }
+                    }
+                } else if (obstacle.type === 'tree') {
+                    // 绘制树木
+                    ctx.fillStyle = '#8B4513';
+                    ctx.fillRect(obstacle.x + obstacle.width/2 - 3, obstacle.y + obstacle.height/2, 6, obstacle.height/2);
+                    
+                    ctx.fillStyle = '#228B22';
+                    ctx.beginPath();
+                    ctx.arc(obstacle.x + obstacle.width/2, obstacle.y + obstacle.height/3, obstacle.width/2, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // 绘制云朵障碍物
+                    ctx.fillStyle = 'rgba(200, 200, 200, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(obstacle.x + obstacle.width/2, obstacle.y + obstacle.height/2, obstacle.width/2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+        
+        // 绘制飞行器 - 马尔代夫海洋风格
+        function drawSpaceship() {
+            const centerX = spaceship.x + spaceship.width / 2;
+            const centerY = spaceship.y - spaceship.height / 2;
+            const angle = -10 * Math.PI / 180; // 轻微向上倾斜
+            
+            // 保存当前画布状态
+            ctx.save();
+            
+            // 平移和旋转画布
+            ctx.translate(centerX, centerY);
+            ctx.rotate(angle);
+            
+            // 创建机身渐变 - 海洋蓝色渐变
+            const bodyGradient = ctx.createLinearGradient(0, -spaceship.height / 2, 0, spaceship.height / 2);
+            bodyGradient.addColorStop(0, '#00B4DB'); // 浅蓝色顶部
+            bodyGradient.addColorStop(0.5, '#0083B0'); // 中蓝色
+            bodyGradient.addColorStop(1, '#005F8A'); // 深蓝色底部
+            
+            // 绘制机身主体
+            ctx.fillStyle = bodyGradient;
+            ctx.beginPath();
+            ctx.moveTo(0, -spaceship.height / 2);
+            ctx.lineTo(-spaceship.width / 3, spaceship.height / 4);
+            ctx.lineTo(spaceship.width / 3, spaceship.height / 4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制机头 - 白色渐变
+            const noseGradient = ctx.createLinearGradient(0, -spaceship.height / 2, 0, -spaceship.height / 4);
+            noseGradient.addColorStop(0, '#FFFFFF'); // 白色
+            noseGradient.addColorStop(1, '#E0F7FA'); // 浅蓝色
+            
+            ctx.fillStyle = noseGradient;
+            ctx.beginPath();
+            ctx.moveTo(0, -spaceship.height / 2);
+            ctx.lineTo(-spaceship.width / 8, -spaceship.height / 4);
+            ctx.lineTo(spaceship.width / 8, -spaceship.height / 4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制主翼 - 青色渐变
+            const wingGradient = ctx.createLinearGradient(-spaceship.width / 2, 0, -spaceship.width / 3, 0);
+            wingGradient.addColorStop(0, '#00BCD4'); // 青色
+            wingGradient.addColorStop(1, '#0097A7'); // 深青色
+            
+            ctx.fillStyle = wingGradient;
+            ctx.beginPath();
+            ctx.moveTo(-spaceship.width / 2, 0);
+            ctx.lineTo(-spaceship.width / 3, -spaceship.height / 6);
+            ctx.lineTo(-spaceship.width / 3, spaceship.height / 6);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(spaceship.width / 2, 0);
+            ctx.lineTo(spaceship.width / 3, -spaceship.height / 6);
+            ctx.lineTo(spaceship.width / 3, spaceship.height / 6);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制尾翼 - 珊瑚色渐变
+            const tailGradient = ctx.createLinearGradient(0, spaceship.height / 4, 0, spaceship.height / 2);
+            tailGradient.addColorStop(0, '#FF6B6B'); // 珊瑚色
+            tailGradient.addColorStop(1, '#FF5252'); // 深珊瑚色
+            
+            ctx.fillStyle = tailGradient;
+            ctx.beginPath();
+            ctx.moveTo(-spaceship.width / 6, spaceship.height / 4);
+            ctx.lineTo(0, spaceship.height / 2);
+            ctx.lineTo(spaceship.width / 6, spaceship.height / 4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制引擎喷口 - 橙色渐变
+            const engineGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, spaceship.width / 10);
+            engineGradient.addColorStop(0, '#FFB74D'); // 浅橙色
+            engineGradient.addColorStop(1, '#FF9800'); // 橙色
+            
+            ctx.fillStyle = engineGradient;
+            ctx.beginPath();
+            ctx.arc(-spaceship.width / 4, spaceship.height / 3, spaceship.width / 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(spaceship.width / 4, spaceship.height / 3, spaceship.width / 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制驾驶舱 - 蓝色玻璃效果
+            const cockpitGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, spaceship.width / 8);
+            cockpitGradient.addColorStop(0, '#81D4FA'); // 浅蓝色
+            cockpitGradient.addColorStop(1, '#29B6F6'); // 蓝色
+            
+            ctx.fillStyle = cockpitGradient;
+            ctx.beginPath();
+            ctx.arc(0, -spaceship.height / 6, spaceship.width / 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 添加海洋风格发光效果
+            ctx.shadowColor = '#00B4DB';
+            ctx.shadowBlur = 20;
+            
+            // 绘制引擎火焰 - 渐变火焰效果
+            const flameGradient = ctx.createLinearGradient(0, spaceship.height / 3, 0, spaceship.height / 2);
+            flameGradient.addColorStop(0, '#FFA726'); // 浅橙色
+            flameGradient.addColorStop(0.5, '#FF7043'); // 橙色
+            flameGradient.addColorStop(1, '#E64A19'); // 深橙色
+            
+            ctx.fillStyle = flameGradient;
+            ctx.beginPath();
+            ctx.moveTo(-spaceship.width / 4, spaceship.height / 3);
+            ctx.lineTo(-spaceship.width / 3, spaceship.height / 2);
+            ctx.lineTo(-spaceship.width / 5, spaceship.height / 3);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(spaceship.width / 4, spaceship.height / 3);
+            ctx.lineTo(spaceship.width / 3, spaceship.height / 2);
+            ctx.lineTo(spaceship.width / 5, spaceship.height / 3);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.shadowBlur = 0;
+            
+            // 添加海洋风格细节线条
+            ctx.strokeStyle = '#00BCD4';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-spaceship.width / 4, 0);
+            ctx.lineTo(spaceship.width / 4, 0);
+            ctx.stroke();
+            
+            // 添加机翼细节
+            ctx.beginPath();
+            ctx.moveTo(-spaceship.width / 2, 0);
+            ctx.lineTo(-spaceship.width / 3, 0);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(spaceship.width / 2, 0);
+            ctx.lineTo(spaceship.width / 3, 0);
+            ctx.stroke();
+            
+            // 添加机头细节线条
+            ctx.beginPath();
+            ctx.moveTo(0, -spaceship.height / 2);
+            ctx.lineTo(0, -spaceship.height / 4);
+            ctx.stroke();
+            
+            // 恢复画布状态
+            ctx.restore();
+        }
+        
+        // 游戏结束
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalDistance').textContent = Math.floor(distance);
+            document.getElementById('finalIslands').textContent = islandsCollected;
+            document.getElementById('gameOver').style.display = 'block';
+            
+            // 保存分数到本地存储
+            saveScore(score, Math.floor(distance), islandsCollected);
+        }
+        
+        // 保存分数到本地存储
+        async function saveScore(finalScore, finalDistance, finalIslands) {
+            // 获取当前玩家名称
+            const playerName = '游客' + Math.floor(Math.random() * 1000);
+            const date = new Date().toISOString().split('T')[0];
+            
+            // 创建分数记录
+            const scoreRecord = {
+                name: playerName,
+                score: finalScore,
+                distance: finalDistance,
+                islands: finalIslands,
+                date: date,
+                timestamp: Date.now(),
+                location: '马尔代夫'
+            };
+            
+            // 保存到本地存储
+            let localScores = JSON.parse(localStorage.getItem('maldivesFlightScores') || '[]');
+            localScores.push(scoreRecord);
+            if (localScores.length > 10) {
+                localScores = localScores.slice(-10);
+            }
+            localStorage.setItem('maldivesFlightScores', JSON.stringify(localScores));
+            
+            console.log('马尔代夫飞行游戏记录已保存:', scoreRecord);
+        }
+        
+        // 重新开始游戏
+        function restartGame() {
+            islands = [];
+            obstacles = [];
+            clouds = [];
+            score = 0;
+            distance = 0;
+            islandsCollected = 0;
+            gameRunning = true;
+            
+            document.getElementById('score').textContent = '0';
+            document.getElementById('distance').textContent = '0';
+            document.getElementById('islands').textContent = '0';
+            document.getElementById('gameOver').style.display = 'none';
+            
+            // 重置飞行器位置
+            spaceship.x = canvas.width / 2;
+            spaceship.y = canvas.height - 50;
+            spaceship.velocityX = 0;
+            spaceship.velocityY = 0;
+        }
+        
+        // 游戏主循环
+        function gameLoop() {
+            if (gameRunning) {
+                update();
+                render();
+                
+                // 增加岛屿生成频率，让玩家能更频繁地看到岛屿景色
+                if (Math.random() < 0.04) { // 提高岛屿生成概率
+                    createIsland();
+                }
+                
+                // 减少障碍物生成频率，让玩家专注于欣赏岛屿景色
+                if (Math.random() < 0.005) { // 降低障碍物生成概率
+                    createObstacle();
+                }
+            }
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // 页面加载完成后初始化游戏
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>
