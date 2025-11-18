@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全球飞行模拟器 - 5D地球探索</title>
+    <!-- 引入CesiumJS库 -->
+    <script src="https://cdn.jsdelivr.net/npm/cesium@1.109.0/Build/Cesium/Cesium.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/cesium@1.109.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #global-map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+        
+        /* CesiumJS样式重置 */
+        #cesium-container {
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            background: #000 !important;
+        }
+        
+        .cesium-widget-credits {
+            display: none !important;
+        }
+        
+        .cesium-widget canvas {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* 确保容器可见性 */
+        #global-map {
+            z-index: 1 !important;
+        }
+        
+        #camera-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            background: linear-gradient(to bottom, #87CEEB 0%, #1E90FF 100%);
+        }
+        
+        #cockpit-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            background: #000;
+        }
+        
+        .ui-panel {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        #location-selector {
+            top: 20px;
+            left: 20px;
+            width: 300px;
+        }
+        
+        #flight-controls {
+            bottom: 20px;
+            right: 20px;
+            width: 250px;
+        }
+        
+        #hud {
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            display: none;
+        }
+        
+        h2 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .location-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .location-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .control-info {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .flight-data {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        
+        .data-label {
+            color: #00ffff;
+        }
+        
+        .data-value {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        #cockpit-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .transition-effect {
+            animation: screenTransition 1s ease-in-out;
+        }
+        
+        @keyframes screenTransition {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .metal-texture {
+            background: linear-gradient(145deg, 
+                #8b8b8b 0%, 
+                #c0c0c0 25%, 
+                #e8e8e8 50%, 
+                #c0c0c0 75%, 
+                #8b8b8b 100%);
+            border: 2px solid #666;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- 全球5D地图视图 -->
+        <div id="global-map">
+            <!-- CesiumJS地球容器 -->
+            <div id="cesium-container" style="width:100%; height:100%; position:absolute; top:0; left:0;"></div>
+            
+            <div class="ui-panel" id="location-selector">
+                <h2>🌍 选择飞行目的地</h2>
+                <button class="location-btn" onclick="selectLocation('tokyo')">🗼 东京 - 现代都市</button>
+                <button class="location-btn" onclick="selectLocation('paris')">🗼 巴黎 - 浪漫之都</button>
+                <button class="location-btn" onclick="selectLocation('newyork')">🗽 纽约 - 大苹果城</button>
+                <button class="location-btn" onclick="selectLocation('sydney')">🏛️ 悉尼 - 海湾之城</button>
+                <button class="location-btn" onclick="selectLocation('dubai')">🏙️ 迪拜 - 沙漠奇迹</button>
+                <div class="control-info">
+                    💡 使用鼠标拖拽旋转地球，滚轮缩放
+                </div>
+            </div>
+        </div>
+        
+        <!-- 外部摄像机视图 -->
+        <div id="camera-view">
+            <canvas id="camera-canvas"></canvas>
+            <div class="ui-panel" id="flight-controls">
+                <h2>🎮 飞行控制</h2>
+                <div class="control-info">
+                    🎯 使用鼠标/手柄控制飞行
+                </div>
+                <div class="control-info">
+                    ⬆️ 上：W键 / 上摇杆
+                </div>
+                <div class="control-info">
+                    ⬇️ 下：S键 / 下摇杆
+                </div>
+                <div class="control-info">
+                    ⬅️ 左：A键 / 左摇杆
+                </div>
+                <div class="control-info">
+                    ➡️ 右：D键 / 右摇杆
+                </div>
+                <button class="location-btn metal-texture" onclick="enterCockpit()">
+                    🚀 进入驾驶舱
+                </button>
+            </div>
+        </div>
+        
+        <!-- 驾驶舱内部视图 -->
+        <div id="cockpit-view">
+            <canvas id="cockpit-canvas"></canvas>
+            <div class="ui-panel" id="hud">
+                <h2>✈️ 飞行仪表盘</h2>
+                <div class="flight-data">
+                    <span class="data-label">高度:</span>
+                    <span class="data-value" id="altitude">0m</span>
+                </div>
+                <div class="flight-data">
+                    <span class="data-label">速度:</span>
+                    <span class="data-value" id="speed">0km/h</span>
+                </div>
+                <div class="flight-data">
+                    <span class="data-label">位置:</span>
+                    <span class="data-value" id="location">东京</span>
+                </div>
+                <div class="flight-data">
+                    <span class="data-label">燃料:</span>
+                    <span class="data-value" id="fuel">100%</span>
+                </div>
+                <button class="location-btn metal-texture" onclick="exitCockpit()">
+                    🌍 返回地图
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CesiumJS配置 -->
+    <script>
+        // 设置CesiumJS的静态资源路径，避免跨域问题
+        window.CESIUM_BASE_URL = 'https://cdn.jsdelivr.net/npm/cesium@1.109.0/Build/Cesium/';
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
